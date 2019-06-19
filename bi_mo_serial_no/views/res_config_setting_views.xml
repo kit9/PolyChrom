@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--    <record id="show_product_form" model="ir.actions.act_window">-->
+<!--            <field name="name">product Views</field>-->
+<!--            <field name="res_model">product.template</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">kanban,tree,form</field>-->
+<!--            <field name="search_view_id" ref="product.product_template_kanban_view"/>-->
+<!--            <field name="context">{}</field>-->
+<!--        </record>-->
+	<record id="view_res_config_mo_inherit" model="ir.ui.view">
+			<field name="name">mo.res.config.settings.inherite</field>
+			<field name="model">res.config.settings</field>
+			<field name="inherit_id" ref="mrp.res_config_settings_view_form"/>
+
+			<field name="arch" type="xml">
+				<xpath expr="//div[@groups='mrp.group_mrp_manager']" position="inside">
+					 <h2>MO Serial No</h2>
+                     <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="apply_method"/>
+                                <div class="text-muted">
+                                    Select Any One of Global or Product Wise.
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="apply_method" class="o_light_label" widget="radio"/>
+                                    </div>
+                                </div>
+                                <div class="content-group" attrs="{'invisible': ['|',('apply_method', '=', 'global'),('apply_method', '=', False)]}">
+                                        <div class="mt16">
+                                            <button name="%(product.product_template_action_all)d" icon="fa-arrow-right" type="action" string="Show Products" class="btn-link"/>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-md-6 col-xs-12 o_setting_box"  >
+                                
+                                <div class="o_setting_right_pane" attrs="{'invisible': ['|',('apply_method', '=', 'product_wise') , ('apply_method', '=', False)]}">
+
+                                	<label for="digits_serial_no"/>
+                                	<field name="digits_serial_no"/>
+                                	<div class="text-muted">
+                                        Number of digits for MO serial no.
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-6 col-xs-12 o_setting_box"  >
+                                <div class="o_setting_right_pane" attrs="{'invisible': ['|',('apply_method', '=', 'product_wise') , ('apply_method', '=', False)]}">
+                                	<label for="prefix_serial_no"/>
+                                
+                                	<field name="prefix_serial_no"/>
+                                	<div class="text-muted">
+                                        Prefix for MO serial no.
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+					
+
+					</xpath>
+				
+			</field>
+		</record>
+
+        <record id="view_product_template_inherited" model="ir.ui.view">
+            <field name="name">product.template.inherite</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tracking']" position="after">
+                     <!-- <field name="picking_serialno_id"/> -->
+                <field name="digits_serial_no"/>
+                     <field name="prefix_serial_no"/>
+                    
+
+                    </xpath>
+                
+            </field>
+        </record>
+
+         
+</odoo>
