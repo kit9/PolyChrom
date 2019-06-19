@@ -1,0 +1,14 @@
+Date 24/05/2019
+Version:-12.0.0.1
+improvement:-
+add one radio button in settings : Serial Number - 1. Global 2. Product wise
+
+1.)if global is selected then the prefix and digits fields will be displayed in settings (as now its working)
+2.)if product wise selected, then a link button will be displayed "Configure Serial No in Products" --> which will displays the kanban view of the product template. and serial no will be generated according to the prefix configured in product.
+
+Date:-28/05/2019
+Version:-12.0.0.2
+Issue:-
+When we not set Prefix for 'Global' or 'Product Wise' option and when confirm MO then getting issue.
+
+=> 30-05-2019 : 12.0.0.3 : Create index file according to new formate or module improvments.
