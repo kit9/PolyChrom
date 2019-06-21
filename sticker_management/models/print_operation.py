@@ -137,7 +137,7 @@ class PrintOperation(models.Model):
         try:
             response = urllib2.urlopen(req, json.dumps(params))
             _logger.info(response)
-        except urllib2.URLError, ex:
+        except urllib2.URLError as ex:
             _logger.info('Exception occured during print: %s' % ex)
 
     @api.multi
