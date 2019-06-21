@@ -81,7 +81,7 @@ class PrintOperation(models.Model):
                 bartender.host, bartender.port, self.print_template_name)
             try:
                 urllib2.urlopen(url).read()
-            except urllib2.URLError, ex:
+            except urllib2.URLError as ex:
                 _logger.info('Exception occured during test of a print: %s URL--%s' % (ex, url) )
                 raise exceptions.UserError("Test returned an error : %s" % ex.reason)
 
