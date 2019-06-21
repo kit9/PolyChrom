@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import api, fields, models
-import urllib2
+import urllib
 import json
 import logging
 _logger = logging.getLogger(__name__)
@@ -33,11 +33,11 @@ class PrintedStickers(models.Model):
             for bartender in sticker.bartender_host_ids:
                 url = 'http://%s:%s/Integration/%s/Execute' \
                   % (bartender.host, bartender.port, sticker.template_name)
-                req = urllib2.Request(url)
+                req = urllib.request.Request(url)
                 req.add_header('Content-Type', 'application/json')
                 params = sticker.json_params
                 _logger.info("Printed with url %s and parameters %s" % (
                     url, params))
 
-                response = urllib2.urlopen(req, params)
+                response = urllib.request.urlopen(req, params)
                 _logger.info(response)
