@@ -82,10 +82,8 @@ class PrintOperation(models.Model):
             try:
                 urllib2.urlopen(url).read()
             except urllib2.URLError, ex:
-                _logger.info('Exception occured during test of a print: %s URL--%s' %
-                             (ex, url) )
-                raise exceptions.UserError("Test returned an error : %s"
-                                           % ex.reason)
+                _logger.info('Exception occured during test of a print: %s URL--%s' % (ex, url) )
+                raise exceptions.UserError("Test returned an error : %s" % ex.reason)
 
 
     @api.multi
