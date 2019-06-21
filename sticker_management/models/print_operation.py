@@ -6,7 +6,6 @@
 from odoo import _, api, exceptions, fields, models
 from odoo.tools.safe_eval import safe_eval, test_python_expr
 from odoo.exceptions import ValidationError
-import urllib2
 import math
 import urllib, json
 import logging
@@ -80,8 +79,8 @@ class PrintOperation(models.Model):
             url = 'http://%s:%s/Integration/%s/Execute' % (
                 bartender.host, bartender.port, self.print_template_name)
             try:
-                urllib2.urlopen(url).read()
-            except urllib2.URLError as ex:
+                urllib.request.urlopen(url).read()
+            except urllib.error.URLError as ex:
                 _logger.info('Exception occured during test of a print: %s URL--%s' % (ex, url) )
                 raise exceptions.UserError("Test returned an error : %s" % ex.reason)
 
@@ -118,7 +117,7 @@ class PrintOperation(models.Model):
     def print_product(self,  host, port, params, object_id):
         url = 'http://%s:%s/Integration/%s/Execute' \
               % (host, port, self.print_template_name)
-        req = urllib2.Request(url)
+        req = urllib.request.Request(url)
         req.add_header('Content-Type', 'application/json')
 
         self.env['printed.sticker'].create({
@@ -135,9 +134,9 @@ class PrintOperation(models.Model):
             url, json.dumps(params)))
 
         try:
-            response = urllib2.urlopen(req, json.dumps(params))
+            response = urllib.request.urlopen(req, json.dumps(params))
             _logger.info(response)
-        except urllib2.URLError as ex:
+        except urllib.error.URLError as ex:
             _logger.info('Exception occured during print: %s' % ex)
 
     @api.multi
