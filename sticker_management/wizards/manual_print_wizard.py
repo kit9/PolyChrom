@@ -7,7 +7,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval, test_python_expr
-import urllib2
 import math
 import urllib, json
 import logging
@@ -56,14 +55,14 @@ class ManualPrintWizard(models.TransientModel):
             for line in self.parameter_line_ids:
                 params[line.parameter_name] = line.parameter_value
 
-            req = urllib2.Request(url)
+            req = urllib.request.Request(url)
             req.add_header('Content-Type', 'application/json')
 
             _logger.info("Printed with url %s and parameters %s" % (
                 url, json.dumps(params)))
 
             try:
-                response = urllib2.urlopen(req, json.dumps(params))
+                response = urllib.request.urlopen(req, json.dumps(params))
                 _logger.info(response)
-            except urllib2.URLError, ex:
+            except urllib.error.URLError as ex:
                 _logger.info('Exception occured during print: %s' % ex)
