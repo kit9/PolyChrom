@@ -1,0 +1,43 @@
+<odoo>
+    <record id="bartender_host_form" model="ir.ui.view">
+        <field name="name">bartender.host.form</field>
+        <field name="model">bartender.host</field>
+        <field name="arch" type="xml">
+            <form string="Bartender Server">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="host"/>
+                            <field name="port"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bartender_host_tree" model="ir.ui.view">
+        <field name="name">bartender.host.tree</field>
+        <field name="model">bartender.host</field>
+        <field name="arch" type="xml">
+            <tree string="Bartender Server">
+                <field name="name"/>
+                <field name="host"/>
+                <field name="port"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_bartender_host" model="ir.actions.act_window">
+        <field name="name">Bartender Server</field>
+        <field name="res_model">bartender.host</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_bartender_host" name="Bartender Server" parent="mrp.menu_mrp_configuration" sequence="11" action="action_bartender_host"/>
+
+</odoo>

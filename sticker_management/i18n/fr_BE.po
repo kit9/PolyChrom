@@ -1,0 +1,308 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* sticker_management
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-19 08:25+0000\n"
+"PO-Revision-Date: 2017-10-19 08:25+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_base_config_settings_bartender_host
+msgid "Bartender Host"
+msgstr "Bartender Host"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_base_config_settings_bartender_port
+msgid "Bartender Port"
+msgstr "Bartender Port"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.inherited_view_general_configuration
+msgid "Bartender configuration"
+msgstr "Bartender configuration"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.manual_print_form
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_create_uid
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_create_uid
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_create_uid
+msgid "Created by"
+msgstr "Créé par"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_create_date
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_create_date
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_create_date
+msgid "Created on"
+msgstr "Créé le"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_date_printed
+msgid "Date printed"
+msgstr "Date printed"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_display_name
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_display_name
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_display_name
+msgid "Display Name"
+msgstr "Afficher le nom"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_stock_pack_operation_has_print_operation
+msgid "Has print operations"
+msgstr "Has print operations"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_id
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_id
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_id
+msgid "ID"
+msgstr "ID"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard___last_update
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation___last_update
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker___last_update
+msgid "Last Modified on"
+msgstr "Dernière Modification le"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_write_uid
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_write_uid
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_write_uid
+msgid "Last Updated by"
+msgstr "Dernière mise à jour par"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_write_date
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_write_date
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_write_date
+msgid "Last Updated on"
+msgstr "Dernière mise à jour le"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_stock_pack_operation_lot
+msgid "Lot/Serial number for pack ops"
+msgstr "Lot/Serial number for pack ops"
+
+#. module: sticker_management
+#: selection:print.operation,object:0
+msgid "MRP Production"
+msgstr "MRP Production"
+
+#. module: sticker_management
+#: selection:print.operation,object:0
+msgid "MRP Production Product"
+msgstr "MRP Production Product"
+
+#. module: sticker_management
+#: selection:print.operation,object:0
+msgid "MRP Work Order"
+msgstr "MRP Work Order"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.print_operation_form
+msgid "Manual Print"
+msgstr "Manual Print"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_mrp_production
+msgid "Manufacturing Order"
+msgstr "Manufacturing Order"
+
+#. module: sticker_management
+#: selection:print.operation,print_on:0
+msgid "Mark as Done"
+msgstr "Mark as Done"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_name
+msgid "Name"
+msgstr "Nom"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_print_template_name
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_print_template_name
+msgid "Name of the bartender template"
+msgstr "Name of the bartender template"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_object
+msgid "Object"
+msgstr "Objet"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_operation_ids
+msgid "On operations"
+msgstr "On operations"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_stock_picking_id
+msgid "Origin Picking"
+msgstr "Origin Picking"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_mrp_production_id
+msgid "Origin Production"
+msgstr "Origin Production"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_stock_pack_operation
+msgid "Packing Operation"
+msgstr "Colisage"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_params
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_json_params
+msgid "Parameters"
+msgstr "Parameters"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_picking_type_ids
+msgid "Picking Type"
+msgstr "Type de préparation"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.view_pack_operation_lot_form
+msgid "Print Once"
+msgstr "Imprimer une fois"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.view_pack_operation_lot_form
+msgid "Print One per item"
+msgstr "Imprimer une fois par produit"
+
+#. module: sticker_management
+#: model:ir.actions.act_window,name:sticker_management.interaction_print_operatino
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_print_operation_id
+#: model:ir.ui.menu,name:sticker_management.menu_print_operation
+#: model:ir.ui.view,arch_db:sticker_management.manual_print_form
+#: model:ir.ui.view,arch_db:sticker_management.print_operation_form
+#: model:ir.ui.view,arch_db:sticker_management.print_operation_tree
+msgid "Print Operation"
+msgstr "Print Operation"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_stock_picking_type_print_operation_ids
+msgid "Print Operations"
+msgstr "Print Operations"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.manual_print_form
+msgid "Print Sticker(s)"
+msgstr "Print Sticker(s)"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_print_on
+msgid "Print on"
+msgstr "Print on"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_stock_pack_operation_print_operation_ids
+msgid "Print operation ids"
+msgstr "Print operation ids"
+
+#. module: sticker_management
+#: model:ir.actions.act_window,name:sticker_management.action_printed_stickers
+#: model:ir.ui.view,arch_db:sticker_management.printed_sticker_form
+#: model:ir.ui.view,arch_db:sticker_management.printed_sticker_tree
+msgid "Printed Sticker"
+msgstr "Printed Sticker"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_mrp_production_printed_sticker_ids
+#: model:ir.ui.menu,name:sticker_management.menu_printed_sticker
+#: model:ir.ui.view,arch_db:sticker_management.mrp_production_form_view_inherited
+msgid "Printed Stickers"
+msgstr "Printed Stickers"
+
+#. module: sticker_management
+#: selection:print.operation,print_on:0
+msgid "Quantity Input"
+msgstr "Quantity Input"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_manual_print_wizard_print_qty
+#: model:ir.model.fields,field_description:sticker_management.field_print_operation_print_qty
+msgid "Quantity to print"
+msgstr "Quantity to print"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_mrp_product_produce
+msgid "Record Production"
+msgstr "Enregistrer la production"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.printed_sticker_tree
+msgid "Reprint"
+msgstr "Reprint"
+
+#. module: sticker_management
+#: selection:print.operation,object:0
+msgid "Stock Pack Operation"
+msgstr "Stock Pack Operation"
+
+#. module: sticker_management
+#: selection:print.operation,print_on:0
+msgid "Stock Pack Operation (manual click)"
+msgstr "Stock Pack Operation (manual click)"
+
+#. module: sticker_management
+#: model:ir.ui.view,arch_db:sticker_management.print_operation_form
+msgid "Test Print"
+msgstr "Test Print"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_stock_picking_type
+msgid "The picking type determines the picking view"
+msgstr "Le type de préparation détermine la vue de préparation"
+
+#. module: sticker_management
+#: model:ir.model.fields,field_description:sticker_management.field_printed_sticker_template_name
+msgid "URL called"
+msgstr "URL called"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_mrp_workorder
+msgid "Work Order"
+msgstr "Ordre de travail"
+
+#. module: sticker_management
+#: selection:print.operation,print_on:0
+msgid "Work Order is Done"
+msgstr "Work Order is Done"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_base_config_settings
+msgid "base.config.settings"
+msgstr "base.config.settings"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_manual_print_wizard
+msgid "manual.print.wizard"
+msgstr "manual.print.wizard"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_print_operation
+msgid "print.operation"
+msgstr "print.operation"
+
+#. module: sticker_management
+#: model:ir.model,name:sticker_management.model_printed_sticker
+msgid "printed.sticker"
+msgstr "printed.sticker"
+

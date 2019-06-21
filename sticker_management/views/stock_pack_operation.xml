@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pack_operation_lot_form" model="ir.ui.view">
+        <field name="name">stock.pack.operation.lots.form.dan</field>
+        <field name="model">stock.pack.operation</field>
+        <field name="inherit_id" ref="stock.view_pack_operation_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pack_lot_ids']/.." position="before">
+                <field name="has_print_operation" invisible="1"/>
+
+                <button name="print_sticker_once" type="object" style="margin-left:1px;margin-right:1px" string="Print Once"
+                        class="btn btn-primary"
+                        attrs="{'invisible': [('has_print_operation', '=', False)]}"/>
+
+                <button name="print_sticker_quantity" type="object" style="margin-left:1px;margin-right:1px" string="Print One per item"
+                        class="btn btn-primary"
+                        attrs="{'invisible': [('has_print_operation', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

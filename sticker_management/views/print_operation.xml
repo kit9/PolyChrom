@@ -1,0 +1,47 @@
+<odoo>
+    <record id="print_operation_form" model="ir.ui.view">
+        <field name="name">print.operation.form</field>
+        <field name="model">print.operation</field>
+        <field name="arch" type="xml">
+            <form string="Print Operation">
+                <header>
+                    <button name="test_print" type="object" string="Test Print" class="btn-primary"/>
+                    <button name="manual_print" type="object" string="Manual Print" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group col="4">
+                        <field name="name" />
+                        <field name="print_qty" />
+                        <field name="print_on" />
+                        <field name="bartender_host_ids" widget="many2many_tags"/>
+                        <field name="operation_ids" widget="many2many_tags" attrs="{'invisible' : [('print_on', '!=', 'workorder_done')] }" />
+                        <field name="object" />
+                        <field name="print_template_name" />
+                        <field name="params" />
+                        <field name="picking_type_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="print_operation_tree" model="ir.ui.view">
+        <field name="name">print.operation.tree</field>
+        <field name="model">print.operation</field>
+        <field name="arch" type="xml">
+            <tree string="Print Operation">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="interaction_print_operation" model="ir.actions.act_window">
+        <field name="name">Print Operation</field>
+        <field name="res_model">print.operation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <menuitem id="menu_print_operation" name="Print Operation" parent="mrp.menu_mrp_configuration" sequence="10" action="interaction_print_operation" />
+</odoo>
