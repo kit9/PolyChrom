@@ -116,5 +116,5 @@ theme for ecommerce store
     'application': True,
     'price': 222.00,
     'currency': 'EUR',
-    'installable': True,
+    'installable': True, 
 }
