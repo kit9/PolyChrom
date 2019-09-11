@@ -77,7 +77,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='tracking']" position="after">
                      <!-- <field name="picking_serialno_id"/> -->
-                <field name="digits_serial_no"/>
+                     <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                      <field name="prefix_serial_no"/>
                     
 
