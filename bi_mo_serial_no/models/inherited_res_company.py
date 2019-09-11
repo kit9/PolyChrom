@@ -20,6 +20,7 @@ class Company(models.Model):
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
+	tracking = fields.Selection(selection_add=[('select_previous', 'Copy Previous Product')])
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 
