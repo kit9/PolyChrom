@@ -20,9 +20,9 @@ class Company(models.Model):
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
-	tracking = fields.Selection(selection_add=[('select_previous', 'Copy Previous Product')])
+	tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], default='previous')
 	digits_serial_no = fields.Integer(string='Digits :')
-	prefix_serial_no = fields.Char(string="Prefix :")
+	prefix_serial_no = fields.Char(string="Prefix :", default='F')
 
 class MrpProductionInherit(models.Model):
 	""" Manufacturing Orders """
