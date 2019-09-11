@@ -23,6 +23,13 @@ class ProductProductInherit(models.Model):
 	tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='previous')
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :", default='F')
+	
+	@api.onchange('tracking')
+	def tracking_onchange(self):
+		if self.tracking == 'previous':
+			self.prefix_serial_no = 'F'
+		else:
+			self.prefix_serial_no = ''
 
 class MrpProductionInherit(models.Model):
 	""" Manufacturing Orders """
