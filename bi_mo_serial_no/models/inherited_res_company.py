@@ -64,7 +64,7 @@ class MrpProductionInherit(models.Model):
 		else:
 			lot_no = str(serial_no)
 			
-		if self.product_id.tracking == 'serial':
+		if self.product_id.tracking == 'previous':
 			if prefix == False:
 				prefix = 'F'
 			for mat in self.move_raw_ids:
