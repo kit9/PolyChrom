@@ -35,14 +35,14 @@ class BillOfMaterials(models.Model):
 	
 	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=[('id', '=', '0')])
 	#, domain=[('id', '=', '0')]
-	@api.onchange('bom_line_ids')
-	def bom_line_ids_onchange(self):
-		res = {}
-		products = []
-		for line in self.bom_line_ids:
-			if line.product_tmpl_id.tracking = 'serial':
-				products.append(line.product_id.id)
-		res['domain']={'prev_product_id':[('id', 'in', products)]}
+	#@api.onchange('bom_line_ids')
+	#def bom_line_ids_onchange(self):
+	#	res = {}
+	#	products = []
+	#	for line in self.bom_line_ids:
+	#		if line.product_tmpl_id.tracking = 'serial':
+	#			products.append(line.product_id.id)
+	#	res['domain']={'prev_product_id':[('id', 'in', products)]}
 	
 class MrpProductionInherit(models.Model):
 	""" Manufacturing Orders """
