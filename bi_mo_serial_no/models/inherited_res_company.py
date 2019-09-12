@@ -63,8 +63,17 @@ class MrpProductionInherit(models.Model):
 			lot_no = prefix+no+str(serial_no)
 		else:
 			lot_no = str(serial_no)
-		company.update({'serial_no' : serial_no})
-		lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			
+		if self.product_id.tracking == 'serial':
+			if prefix == False:
+				prefix = 'F'
+			for mat in self.move_raw_ids:
+				for lot in mat.active_move_line_ids:
+					lot_no = prefix+lot.lot_id.name
+					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+		else:
+			company.update({'serial_no' : serial_no})
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		return lot_serial_no
 
 	def _workorders_create(self, bom, bom_data):
