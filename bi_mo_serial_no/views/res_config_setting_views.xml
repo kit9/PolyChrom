@@ -86,7 +86,7 @@
             </field>
         </record>
 
-	
+	<!--
         <record id="view_mrp_bom_form_inherited" model="ir.ui.view">
             <field name="name">mrp.bom.inherite</field>
             <field name="model">mrp.bom</field>
@@ -99,6 +99,6 @@
                 </xpath>
             </field>
         </record>
-	
+	-->
          
 </odoo>
