@@ -86,5 +86,19 @@
             </field>
         </record>
 
+	
+        <record id="view_mrp_bom_form_inherited" model="ir.ui.view">
+            <field name="name">mrp.bom.inherite</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                     <!-- <field name="picking_serialno_id"/> -->
+                     <field name="prev_product_id"/>
+                </xpath>
+            </field>
+        </record>
+	
          
 </odoo>
