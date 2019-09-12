@@ -20,7 +20,7 @@ class Company(models.Model):
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
-	tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='previous')
+	tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='none')
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :", default='F')
 	
@@ -30,7 +30,20 @@ class ProductProductInherit(models.Model):
 			self.prefix_serial_no = 'F'
 		else:
 			self.prefix_serial_no = ''
-
+class BillOfMaterials(models.Model):
+	_inherit = 'mrp.bom'
+	
+	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=[('id', '=', '0')])
+	
+	@api.onchange('bom_line_ids')
+	def bom_line_ids_onchange(self):
+		res = {}
+		products = []
+		for line in self.bom_line_ids:
+			if line.product_tmpl_id.tracking = 'serial':
+				products.append(line.product_id.id)
+		res['domain']={'prev_product_id':[('id', 'in', products)]}
+	
 class MrpProductionInherit(models.Model):
 	""" Manufacturing Orders """
 	_inherit = 'mrp.production'
