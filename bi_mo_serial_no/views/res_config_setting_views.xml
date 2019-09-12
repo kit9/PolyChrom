@@ -94,7 +94,6 @@
 
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='company_id']" position="before">
-                     <!-- <field name="picking_serialno_id"/> -->
                      <field name="prev_product_id"/>
                 </xpath>
             </field>
