@@ -33,8 +33,8 @@ class ProductProductInherit(models.Model):
 class BillOfMaterials(models.Model):
 	_inherit = 'mrp.bom'
 	
-	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=[('id', '=', '0')])
-	
+	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.')
+	#, domain=[('id', '=', '0')]
 	#@api.onchange('bom_line_ids')
 	#def bom_line_ids_onchange(self):
 #		res = {}
