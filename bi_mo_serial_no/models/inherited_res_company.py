@@ -41,9 +41,9 @@ class BillOfMaterials(models.Model):
 	@api.model
 	def _getfilter(self):
 		products = []
-        	for line in self.bom_line_ids:
-			if line.product_tmpl_id.tracking = 'serial':
-				products.append(line.product_id.id)
+        #	for line in self.bom_line_ids:
+	#		if line.product_tmpl_id.tracking = 'serial':
+	#			products.append(line.product_id.id)
 		return [('id', 'in', products)]
 	
 	#@api.onchange('bom_line_ids')
