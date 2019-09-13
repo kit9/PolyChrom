@@ -50,14 +50,16 @@ class BillOfMaterials(models.Model):
 	#		products.append(1381)  #bl.product_id.id)
 		return [('id', 'in', products)]
 	
-	#@api.onchange('bom_line_ids')
-	#def bom_line_ids_onchange(self):
-	#	res = {}
-	#	products = []
+	@api.onchange('bom_line_ids')
+	def bom_line_ids_onchange(self):
+		res = {}
+		products = []
+		products.append(1381)
 	#	for line in self.bom_line_ids:
 	#		if line.product_tmpl_id.tracking = 'serial':
 	#			products.append(line.product_id.id)
-	#	res['domain']={'prev_product_id':[('id', 'in', products)]}
+		res['domain']={'prev_product_id':[('id', 'in', products)]}
+		return res
 	
 class MrpProductionInherit(models.Model):
 	""" Manufacturing Orders """
