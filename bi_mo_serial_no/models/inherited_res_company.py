@@ -54,14 +54,17 @@ class BillOfMaterials(models.Model):
 	def bom_line_ids_onchange(self):
 		res = {}
 		products = []
+		if self.bom_line_ids:
+			for x in self.bom_line_ids:
+				products.append(x.product_id.id)
 	#	products.append(1381)
 	#	for line in self.bom_line_ids:
 	#		if line.product_tmpl_id.tracking = 'serial':
 	#			products.append(line.product_id.id)
-		for record in self:
+	#	for record in self:
 			
-			if record.bom_line_ids != False:
-				products.append(record.bom_line_ids.product_id) #1380)
+	#		if record.bom_line_ids != False:
+	#			products.append(record.bom_line_ids.product_id) #1380)
 	#		for x in record.bom_line_ids.bom_lines:
 	#			if x.product_tmpl_id.tracking = 'serial':
 	#				products.append(x.product_id.id)
