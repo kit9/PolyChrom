@@ -22,7 +22,7 @@ class ProductProductInherit(models.Model):
 
 	tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='none')
 	digits_serial_no = fields.Integer(string='Digits :')
-	prefix_serial_no = fields.Char(string="Prefix :", default='F')
+	prefix_serial_no = fields.Char(string="Prefix :")
 	
 	@api.onchange('tracking')
 	def tracking_onchange(self):
@@ -32,11 +32,17 @@ class ProductProductInherit(models.Model):
 			self.prefix_serial_no = ''
 			
 			
-class BillOfMaterials(models.Model):
+class MrpBom(models.Model):
 	_inherit = 'mrp.bom'
 	
 	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=lambda self: self._getfilter())
 	#, domain=[('id', '=', '0')]
+	
+	def create(self, values):
+		record = super(MrpBom, self).create(values)
+		record['product_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
+		record['product_tmpl_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
+		return record
 	
 	@api.model
 	def _getfilter(self):
