@@ -43,7 +43,7 @@ class BillOfMaterials(models.Model):
 		products = []
 		if self.bom_line_ids != False:
 			products.append(1381)
-			print self.bom_line_ids.total
+	#		print self.bom_line_ids.total
         #	for bl in self.bom_line_ids:
 	#		products.append(1)
         #		if bl.product_tmpl_id.tracking = 'serial':
