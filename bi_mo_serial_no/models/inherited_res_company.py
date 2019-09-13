@@ -44,7 +44,7 @@ class BillOfMaterials(models.Model):
         	for line in self.bom_line_ids:
 			if line.product_tmpl_id.tracking = 'serial':
 				products.append(line.product_id.id)
-		return [('id', '=', products)]
+		return [('id', 'in', products)]
 	
 	#@api.onchange('bom_line_ids')
 	#def bom_line_ids_onchange(self):
