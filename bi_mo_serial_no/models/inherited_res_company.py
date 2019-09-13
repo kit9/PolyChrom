@@ -41,7 +41,7 @@ class BillOfMaterials(models.Model):
 	@api.model
 	def _getfilter(self):
 		products = []
-		if self.bom_line_ids == False:
+		if self.bom_line_ids != False:
 			products.append(1381)
         #	for line in self.bom_line_ids:
 	#		products.append(1)
