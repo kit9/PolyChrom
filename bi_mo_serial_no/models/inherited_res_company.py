@@ -41,17 +41,10 @@ class BillOfMaterials(models.Model):
 	@api.model
 	def _getfilter(self):
 		products = []
-	#	if self.bom_line_ids:
-		for x in self.bom_line_ids:
-	#		if x.product_tmpl_id.tracking == 'serial':
-			products.append(x.product_id.id)
-	#	if self.bom_line_ids != False:
-	#		products.append(0)
-	#		print self.bom_line_ids.total
-        #	for bl in self.bom_line_ids:
-	#		products.append(1)
-        #		if bl.product_tmpl_id.tracking = 'serial':
-	#		products.append(1381)  #bl.product_id.id)
+		if self.bom_line_ids:
+			for x in self.bom_line_ids:
+				if x.product_tmpl_id.tracking == 'serial':
+					products.append(x.product_id.id)
 		return [('id', 'in', products)]
 	
 	@api.onchange('bom_line_ids')
@@ -62,17 +55,6 @@ class BillOfMaterials(models.Model):
 			for x in self.bom_line_ids:
 				if x.product_tmpl_id.tracking == 'serial':
 					products.append(x.product_id.id)
-	#	products.append(1381)
-	#	for line in self.bom_line_ids:
-	#		if line.product_tmpl_id.tracking = 'serial':
-	#			products.append(line.product_id.id)
-	#	for record in self:
-			
-	#		if record.bom_line_ids != False:
-	#			products.append(record.bom_line_ids.product_id) #1380)
-	#		for x in record.bom_line_ids.bom_lines:
-	#			if x.product_tmpl_id.tracking = 'serial':
-	#				products.append(x.product_id.id)
 		res['domain']={'prev_product_id':[('id', 'in', products)]}
 		return res
 	
@@ -109,13 +91,16 @@ class MrpProductionInherit(models.Model):
 		else:
 			lot_no = str(serial_no)
 			
-		if self.product_id.tracking == 'previous':
+		if self.product_id.tracking == 'previous' and self.bom_id and self.bom_id.prev_product_id:
 			if prefix == False:
 				prefix = 'F'
-			for mat in self.move_raw_ids:
-				for lot in mat.active_move_line_ids:
-					lot_no = prefix+lot.lot_id.name
-					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			prev_prod = self.bom_id.prev_product_id
+			mrp = self.env['mrp.production'].search([('product_id', '=', prev_prod)])
+			lot_no = prefix+mrp[0].finished_move_line_ids[0].lot_id.name
+		#	for mat in self.move_raw_ids:
+		#		for lot in mat.active_move_line_ids:
+		#			lot_no = prefix+lot.lot_id.name
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		else:
 			company.update({'serial_no' : serial_no})
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
