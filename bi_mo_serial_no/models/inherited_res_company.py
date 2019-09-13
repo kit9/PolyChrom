@@ -35,7 +35,7 @@ class ProductProductInherit(models.Model):
 class BillOfMaterials(models.Model):
 	_inherit = 'mrp.bom'
 	
-	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=_getfilter)
+	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=lambda self: self._getfilter())
 	#, domain=[('id', '=', '0')]
 	
 	@api.model
