@@ -60,8 +60,8 @@ class BillOfMaterials(models.Model):
 	#			products.append(line.product_id.id)
 		for record in self:
 			
-			if record.bom_line_ids.product_tmpl_id.tracking = 'serial': # != False:
-				products.append(1380)
+			if record.bom_line_ids != False:
+				products.append(record.bom_line_ids.product_id) #1380)
 	#		for x in record.bom_line_ids.bom_lines:
 	#			if x.product_tmpl_id.tracking = 'serial':
 	#				products.append(x.product_id.id)
