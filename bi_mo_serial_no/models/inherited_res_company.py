@@ -54,10 +54,14 @@ class BillOfMaterials(models.Model):
 	def bom_line_ids_onchange(self):
 		res = {}
 		products = []
-		products.append(1381)
+	#	products.append(1381)
 	#	for line in self.bom_line_ids:
 	#		if line.product_tmpl_id.tracking = 'serial':
 	#			products.append(line.product_id.id)
+		for record in self:
+			for x in record.bom_line_ids:
+				if x.product_tmpl_id.tracking = 'serial':
+					products.append(x.product_id.id)
 		res['domain']={'prev_product_id':[('id', 'in', products)]}
 		return res
 	
