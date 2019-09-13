@@ -30,6 +30,8 @@ class ProductProductInherit(models.Model):
 			self.prefix_serial_no = 'F'
 		else:
 			self.prefix_serial_no = ''
+			
+			
 class BillOfMaterials(models.Model):
 	_inherit = 'mrp.bom'
 	
@@ -42,7 +44,7 @@ class BillOfMaterials(models.Model):
 	#	for line in self.bom_line_ids:
 	#		if line.product_tmpl_id.tracking = 'serial':
 	#			products.append(line.product_id.id)
-		return [('id', 'in', [0])]
+		return [('id', '=', 0)]
 	
 	#@api.onchange('bom_line_ids')
 	#def bom_line_ids_onchange(self):
