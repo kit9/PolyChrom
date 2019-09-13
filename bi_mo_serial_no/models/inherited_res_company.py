@@ -38,6 +38,7 @@ class MrpBom(models.Model):
 	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=lambda self: self._getfilter())
 	#, domain=[('id', '=', '0')]
 	
+	@api.model
 	def create(self, values):
 		record = super(MrpBom, self).create(values)
 		record['product_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
