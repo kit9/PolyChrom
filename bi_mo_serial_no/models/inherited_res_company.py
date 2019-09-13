@@ -42,7 +42,7 @@ class BillOfMaterials(models.Model):
 	def _getfilter(self):
 		products = []
 		if self.bom_line_ids == False:
-			produce = {}
+			products.append(1381)
         #	for line in self.bom_line_ids:
 	#		products.append(1)
 	#		if line.product_tmpl_id.tracking = 'serial':
