@@ -110,7 +110,7 @@ class MrpProductionInherit(models.Model):
 				
 			_logger.info('***Prefix: %s', prefix)
 			
-			prev_prod = self.bom_id.prev_product_id
+			prev_prod = self.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
 			mrp = self.env['mrp.production'].search([('product_id', '=', prev_prod)])
