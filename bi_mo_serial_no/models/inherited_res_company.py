@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-_logger - logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class Company(models.Model):
 	_inherit = 'res.company'
