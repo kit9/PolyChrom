@@ -100,6 +100,7 @@ class MrpProductionInherit(models.Model):
 		else:
 			lot_no = str(serial_no)
 			
+		_logger.info('***Product Name: %s', self.product_id.name)
 		_logger.info('***Tracking: %s', self.product_id.tracking)
 			
 			
