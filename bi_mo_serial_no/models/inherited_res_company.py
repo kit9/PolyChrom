@@ -108,7 +108,8 @@ class MrpProductionInherit(models.Model):
 			if prefix == False:
 				prefix = 'F'
 				
-			_logger.info('***Prefix: %s', prefix)
+			_logger.info('***Prefix: %s', prefix)			
+			_logger.info('***Previous Product: %s', self.bom_id.prev_product_id.name)
 			
 			prev_prod = self.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
@@ -121,7 +122,7 @@ class MrpProductionInherit(models.Model):
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		else:
 			company.update({'serial_no' : serial_no})
-			_logger.info('NO, NO, NO, this is not where you want to be')
+			_logger.info('*** NO, NO, NO, this is not where you want to be')
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		return lot_serial_no
 
