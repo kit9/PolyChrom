@@ -122,11 +122,12 @@ class MrpProductionInherit(models.Model):
 			material = self.move_raw_ids.search([('product_id', '=', prev_prod)])
 			for m in material:
 				for ln in m.active_move_line_ids:
-					lot_no = prefix+ln.lot_id.name
-					serialExists = self.env['stock.production.lot'].search([('name', '=', lot_no)])
-					if not serialExists:
-						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-						break
+					if ln.lot_id:
+						lot_no = prefix+ln.lot_id.name
+						serialExists = self.env['stock.production.lot'].search([('name', '=', lot_no)])
+						if not serialExists:
+							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+							break
 		else:
 			company.update({'serial_no' : serial_no})
 			_logger.info('*** NO, NO, NO, this is not where you want to be')
