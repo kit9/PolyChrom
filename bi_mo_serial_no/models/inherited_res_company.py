@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Browseinfo. See LICENSE file for full copyright and licensing details.
-
+import logging
 from odoo import api, fields, models, _
 from odoo.tools import float_compare, float_round
 from odoo.addons import decimal_precision as dp
@@ -8,6 +8,7 @@ from odoo.exceptions import UserError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+_logger - logging.getLogger(__name__)
 
 class Company(models.Model):
 	_inherit = 'res.company'
@@ -37,6 +38,7 @@ class MrpBom(models.Model):
 	
 	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=lambda self: self._getfilter())
 	#, domain=[('id', '=', '0')]
+	
 	
 	@api.model
 	def create(self, values):
@@ -98,10 +100,18 @@ class MrpProductionInherit(models.Model):
 		else:
 			lot_no = str(serial_no)
 			
+		_logger.info('***Tracking: %s', self.product_id.tracking)
+			
+			
 		if self.product_id.tracking == 'previous' and self.bom_id and self.bom_id.prev_product_id:
 			if prefix == False:
 				prefix = 'F'
+				
+			_logger.info('***Prefix: %s', prefix)
+			
 			prev_prod = self.bom_id.prev_product_id
+			_logger.info('***Prev_Prod_Id: %s', prev_prod)
+			
 			mrp = self.env['mrp.production'].search([('product_id', '=', prev_prod)])
 			lot_no = prefix+mrp[0].finished_move_line_ids[0].lot_id.name
 		#	for mat in self.move_raw_ids:
@@ -110,6 +120,7 @@ class MrpProductionInherit(models.Model):
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		else:
 			company.update({'serial_no' : serial_no})
+			_logger.info('NO, NO, NO, this is not where you want to be')
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		return lot_serial_no
 
