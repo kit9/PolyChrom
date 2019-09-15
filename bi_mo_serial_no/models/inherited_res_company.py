@@ -120,8 +120,9 @@ class MrpProductionInherit(models.Model):
 					_logger.info('*** Line info: %s', ln)
 					if ln.lot_id:
 						lot_no = prefix+ln.lot_id.name
-						serialExists = self.env['stock.production.lot'].search([('name', '=', lot_no)])
+						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
 						if not serialExists:
+							_logger.info('*** Creating item: %s', lot_no)
 							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 							break
 		else:
@@ -132,6 +133,7 @@ class MrpProductionInherit(models.Model):
 				lot_no = str(serial_no)
 			company.update({'serial_no' : serial_no})
 			_logger.info('*** NO, NO, NO, this is not where you want to be')
+			_logger.info('*** Creating item: %s', lot_no)
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 			
 		if not lot_serial_no:			
@@ -141,6 +143,7 @@ class MrpProductionInherit(models.Model):
 				lot_no = str(serial_no)
 			company.update({'serial_no' : serial_no})
 			_logger.info('*** Final Chance to set, done the original way')
+			_logger.info('*** Creating item: %s', lot_no)
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 			
 		return lot_serial_no
