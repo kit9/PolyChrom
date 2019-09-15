@@ -97,7 +97,7 @@ class MrpProductionInherit(models.Model):
 			
 		_logger.info('***Product Name: %s', self.product_id.name)
 		_logger.info('***Tracking: %s', self.product_id.tracking)
-			
+		lot_serial_no = False
 			
 		if self.product_id.tracking == 'previous' and self.bom_id and self.bom_id.prev_product_id:
 			if prefix == False:
