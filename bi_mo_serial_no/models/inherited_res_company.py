@@ -94,11 +94,6 @@ class MrpProductionInherit(models.Model):
 				no = no + "0"
 		else :
 			no = ""
-
-		if prefix != False:
-			lot_no = prefix+no+str(serial_no)
-		else:
-			lot_no = str(serial_no)
 			
 		_logger.info('***Product Name: %s', self.product_id.name)
 		_logger.info('***Tracking: %s', self.product_id.tracking)
@@ -129,9 +124,24 @@ class MrpProductionInherit(models.Model):
 							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 							break
 		else:
+			
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
 			company.update({'serial_no' : serial_no})
 			_logger.info('*** NO, NO, NO, this is not where you want to be')
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			
+		if not lot_serial_no:			
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
+			company.update({'serial_no' : serial_no})
+			_logger.info('*** Final Chance to set, done the original way')
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			
 		return lot_serial_no
 
 	def _workorders_create(self, bom, bom_data):
