@@ -55,7 +55,7 @@ class MrpProductProduce(models.TransientModel):
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
 			material = self.production_id.move_raw_ids.search([('product_id', '=', prev_prod)])
-			do_break = false
+			do_break = False
 			for m in material:
 				for ln in m.active_move_line_ids:
 					_logger.info('*** Line info: %s', ln)
@@ -67,7 +67,7 @@ class MrpProductProduce(models.TransientModel):
 							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 							do_break = True
 							break
-				if do_break == True:
+				if do_break:
 					break
 		# This is the original way
 		if not lot_serial_no:
