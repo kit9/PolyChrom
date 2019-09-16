@@ -25,12 +25,12 @@ class ProductProductInherit(models.Model):
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 	
-	@api.onchange('tracking')
-	def tracking_onchange(self):
-		if self.tracking == 'previous':
-			self.prefix_serial_no = 'F'
-		else:
-			self.prefix_serial_no = ''
+	#@api.onchange('tracking')
+	#def tracking_onchange(self):
+	#	if self.tracking == 'previous':
+	#		self.prefix_serial_no = 'F'
+	#	else:
+	#		self.prefix_serial_no = ''
 			
 			
 class MrpBom(models.Model):
@@ -40,12 +40,12 @@ class MrpBom(models.Model):
 	#, domain=[('id', '=', '0')]
 	
 	
-	@api.model
-	def create(self, values):
-		record = super(MrpBom, self).create(values)
-		record['product_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
-		record['product_tmpl_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
-		return record
+	#@api.model
+	#def create(self, values):
+	#	record = super(MrpBom, self).create(values)
+	#	record['product_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
+	#	record['product_tmpl_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
+	#	return record
 	
 	@api.model
 	def _getfilter(self):
