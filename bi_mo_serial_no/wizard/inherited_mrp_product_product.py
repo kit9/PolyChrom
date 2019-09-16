@@ -55,16 +55,23 @@ class MrpProductProduce(models.TransientModel):
 			prev_prod = self.production_id.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
-			product_line = self.produce_line_ids.search([('product_id', '=', prev_prod)], limit=1)
-			_logger.info('*** Product Line: %s', product_line)
-			if product_line:
-				_logger.info('*** Product Line Lot Name: %s', product_line.lot_id.name)
-				lot_no = prefix+product_line.lot_id.name
-				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
-				_logger.info('*** Serial Exists: %s', serialExists)
-				if not serialExists:
-					_logger.info('*** Creating item: %s', lot_no)
-					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			lot_no = prefix+self.lot_id.name
+			serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+			_logger.info('*** Serial Exists: %s', serialExists)
+			if not serialExists:
+				_logger.info('*** Creating item: %s', lot_no)
+				lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			
+			#product_line = self.produce_line_ids.search([('product_id', '=', prev_prod)], limit=1)
+			#_logger.info('*** Product Line: %s', product_line)
+			#if product_line:
+		#		_logger.info('*** Product Line Lot Name: %s', product_line.lot_id.name)
+		#		lot_no = prefix+product_line.lot_id.name
+		#		serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+		#		_logger.info('*** Serial Exists: %s', serialExists)
+		#		if not serialExists:
+		#			_logger.info('*** Creating item: %s', lot_no)
+		#			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 			#material = self.production_id.move_raw_ids.search([('product_id', '=', prev_prod)])
 			#do_break = False
 			#for m in material:
