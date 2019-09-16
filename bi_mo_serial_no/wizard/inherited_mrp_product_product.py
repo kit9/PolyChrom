@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Browseinfo. See LICENSE file for full copyright and licensing details.
 
-
+import logging
 from collections import Counter
 from datetime import datetime
 
@@ -9,6 +9,8 @@ from odoo import api, fields, models, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_round
+
+_logger = logging.getLogger(__name__)
 
 class MrpProductProduce(models.TransientModel):
 	_inherit = 'mrp.product.produce'
