@@ -74,6 +74,7 @@ class MrpProductionInherit(models.Model):
 	# lot_numbr = fields.Char(string="lot number")
 
 	def create_custom_lot_no(self):
+		_logger.info('*** running create_custom_lot_no')
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
 		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
 
