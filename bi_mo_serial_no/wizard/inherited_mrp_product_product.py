@@ -43,12 +43,34 @@ class MrpProductProduce(models.TransientModel):
 		else :
 			no = ""
 
-		if prefix != False:
-			lot_no = prefix+no+str(serial_no)
-		else:
-			lot_no = str(serial_no)
-		company.update({'serial_no' : serial_no})
-		lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+		if self.production_id.bom_id and self.production_id.bom_id.prev_product_id:
+			if prefix == False:
+				prefix = 'F'
+				
+			_logger.info('***Prefix: %s', prefix)			
+			_logger.info('***Previous Product: %s', self.bom_id.prev_product_id.name)
+			prev_prod = self.production_id.bom_id.prev_product_id.id
+			_logger.info('***Prev_Prod_Id: %s', prev_prod)
+			
+			material = self.production_id.move_raw_ids.search([('product_id', '=', prev_prod)])
+			for m in material:
+				for ln in m.active_move_line_ids:
+					_logger.info('*** Line info: %s', ln)
+					if ln.lot_id:
+						lot_no = prefix+ln.lot_id.name
+						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+						if not serialExists:
+							_logger.info('*** Creating item: %s', lot_no)
+							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+							break
+		# This is the original way
+		if not lot_serial_no:
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
+			company.update({'serial_no' : serial_no})
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		self.lot_id = lot_serial_no
 		# Nothing to do for lots since values are created using default data (stock.move.lots)
 		quantity = self.product_qty
