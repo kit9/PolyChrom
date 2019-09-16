@@ -21,7 +21,7 @@ class Company(models.Model):
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
-	tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='none')
+	#tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='none')
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 	
@@ -99,13 +99,11 @@ class MrpProductionInherit(models.Model):
 			lot_no = prefix+no+str(serial_no)
 		else:
 			lot_no = str(serial_no)
-		company.update({'serial_no' : serial_no})
 			
 		_logger.info('***Product Name: %s', self.product_id.name)
-		_logger.info('***Tracking: %s', self.product_id.tracking)
-		lot_serial_no = False
+		lot_serial_no = False			
 			
-		if self.product_id.tracking == 'previous' and self.bom_id and self.bom_id.prev_product_id:
+		if self.bom_id and self.bom_id.prev_product_id:
 			if prefix == False:
 				prefix = 'F'
 				
@@ -115,11 +113,6 @@ class MrpProductionInherit(models.Model):
 			prev_prod = self.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
-		#	mrp = self.env['mrp.production'].search([('product_id', '=', prev_prod)])
-		#	lot_no = prefix+mrp[0].finished_move_line_ids[0].lot_id.name
-		#	for  in self.move_raw_ids:
-		#		for lot in mat.active_move_line_ids:
-		#			lot_no = prefix+lot.lot_id.name
 			material = self.move_raw_ids.search([('product_id', '=', prev_prod)])
 			for m in material:
 				for ln in m.active_move_line_ids:
@@ -131,16 +124,12 @@ class MrpProductionInherit(models.Model):
 							_logger.info('*** Creating item: %s', lot_no)
 							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 							break
-		else:			
-			_logger.info('*** NO, NO, NO, this is not where you want to be')
-			_logger.info('*** Creating item: %s', lot_no)
-			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 			
-		if not lot_serial_no:			
-			_logger.info('*** Final Chance to set, done the original way')
+		if not lot_serial_no:
+			company.update({'serial_no' : serial_no})
+			_logger.info('*** Creating the original way')
 			_logger.info('*** Creating item: %s', lot_no)
-			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-			
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})			
 		return lot_serial_no
 
 	def _workorders_create(self, bom, bom_data):
