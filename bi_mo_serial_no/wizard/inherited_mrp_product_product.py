@@ -62,7 +62,7 @@ class MrpProductProduce(models.TransientModel):
 				lot_no = prefix+product_line.lot_id.name
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
 				_logger.info('*** Serial Exists: %s', serialExists)
-				if serialExists == False:
+				if not serialExists:
 					_logger.info('*** Creating item: %s', lot_no)
 					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 			#material = self.production_id.move_raw_ids.search([('product_id', '=', prev_prod)])
