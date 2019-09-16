@@ -54,21 +54,29 @@ class MrpProductProduce(models.TransientModel):
 			prev_prod = self.production_id.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
-			material = self.production_id.move_raw_ids.search([('product_id', '=', prev_prod)])
-			do_break = False
-			for m in material:
-				for ln in m.active_move_line_ids:
-					_logger.info('*** Line info: %s', ln)
-					if ln.lot_id:
-						lot_no = prefix+ln.lot_id.name
-						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
-						if serialExists == False:
-							_logger.info('*** Creating item: %s', lot_no)
-							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-							do_break = True
-							break
-				if do_break:
-					break
+			product_line = self.product_line_ids.search([('product_id', '=', prev_prod)], limit=1)
+			if product_line:
+				lot_no = prefix+product_line.lot_id.name
+				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+				if serialExists == False:
+					_logger.info('*** Creating item: %s', lot_no)
+					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			#material = self.production_id.move_raw_ids.search([('product_id', '=', prev_prod)])
+			#do_break = False
+			#for m in material:
+		#		for ln in m.active_move_line_ids:
+		#			_logger.info('*** Line info: %s', ln)
+		#			if ln.lot_id:
+		#				lot_no = prefix+ln.lot_id.name
+		#				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+		#				if serialExists == False:
+		#					_logger.info('*** Creating item: %s', lot_no)
+		#					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+		#					do_break = True
+		#					break
+		#		if do_break:
+		#			break
+		
 		# This is the original way
 		if not lot_serial_no:
 			if prefix != False:
