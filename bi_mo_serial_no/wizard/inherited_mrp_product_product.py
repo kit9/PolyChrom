@@ -44,7 +44,8 @@ class MrpProductProduce(models.TransientModel):
 				no = no + "0"
 		else :
 			no = ""
-
+		
+		lot_serial_no = False
 		if self.production_id.bom_id and self.production_id.bom_id.prev_product_id:
 			if prefix == False:
 				prefix = 'F'
@@ -78,7 +79,7 @@ class MrpProductProduce(models.TransientModel):
 		#			break
 		
 		# This is the original way
-		if not lot_serial_no:
+		if lot_serial_no == False:
 			if prefix != False:
 				lot_no = prefix+no+str(serial_no)
 			else:
