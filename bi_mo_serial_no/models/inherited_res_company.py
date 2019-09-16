@@ -84,7 +84,7 @@ class MrpProductionInherit(models.Model):
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
-		prefix = 'DART-'
+		#prefix = 'DART-'
 		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
