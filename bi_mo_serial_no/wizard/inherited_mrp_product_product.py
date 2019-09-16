@@ -54,7 +54,7 @@ class MrpProductProduce(models.TransientModel):
 			prev_prod = self.production_id.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
-			product_line = self.product_line_ids.search([('product_id', '=', prev_prod)], limit=1)
+			product_line = self.produce_line_ids.search([('product_id', '=', prev_prod)], limit=1)
 			if product_line:
 				lot_no = prefix+product_line.lot_id.name
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
