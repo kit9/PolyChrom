@@ -50,7 +50,7 @@ class MrpProductProduce(models.TransientModel):
 				prefix = 'F'
 				
 			_logger.info('***Prefix: %s', prefix)			
-			_logger.info('***Previous Product: %s', self.bom_id.prev_product_id.name)
+			_logger.info('***Previous Product: %s', self.production_id.bom_id.prev_product_id.name)
 			prev_prod = self.production_id.bom_id.prev_product_id.id
 			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
