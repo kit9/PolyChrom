@@ -77,14 +77,38 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='tracking']" position="after">
                      <!-- <field name="picking_serialno_id"/> -->
-                <field name="digits_serial_no"/>
+                     <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                      <field name="prefix_serial_no"/>
-                    
+                </xpath>
+                
+            </field>
+        </record>
+        <record id="view_product_product_inherited" model="ir.ui.view">
+            <field name="name">product.product.inherite</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
 
-                    </xpath>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tracking']" position="after">
+                     <!-- <field name="picking_serialno_id"/> -->
+                     <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
+                     <field name="prefix_serial_no"/>  
+                </xpath>
                 
             </field>
         </record>
 
-         
+	
+        <record id="view_mrp_bom_form_inherited" model="ir.ui.view">
+            <field name="name">mrp.bom.inherite</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                     <field name="prev_product_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+                </xpath>
+            </field>
+        </record>
+	         
 </odoo>

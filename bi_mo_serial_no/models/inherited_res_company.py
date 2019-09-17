@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Browseinfo. See LICENSE file for full copyright and licensing details.
-
+import logging
 from odoo import api, fields, models, _
 from odoo.tools import float_compare, float_round
 from odoo.addons import decimal_precision as dp
@@ -8,6 +8,7 @@ from odoo.exceptions import UserError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+_logger = logging.getLogger(__name__)
 
 class Company(models.Model):
 	_inherit = 'res.company'
@@ -21,8 +22,33 @@ class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
 	digits_serial_no = fields.Integer(string='Digits :')
-	prefix_serial_no = fields.Char(string="Prefix :")
-
+	prefix_serial_no = fields.Char(string="Prefix :")	
+			
+class MrpBom(models.Model):
+	_inherit = 'mrp.bom'
+	
+	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=lambda self: self._getfilter())
+	
+	@api.model
+	def _getfilter(self):
+		products = []
+		if self.bom_line_ids:
+			for x in self.bom_line_ids:
+				if x.product_tmpl_id.tracking == 'serial':
+					products.append(x.product_id.id)
+		return [('id', 'in', products)]
+	
+	@api.onchange('bom_line_ids')
+	def bom_line_ids_onchange(self):
+		res = {}
+		products = []
+		if self.bom_line_ids:
+			for x in self.bom_line_ids:
+				if x.product_tmpl_id.tracking == 'serial':
+					products.append(x.product_id.id)
+		res['domain']={'prev_product_id':[('id', 'in', products)]}
+		return res
+	
 class MrpProductionInherit(models.Model):
 	""" Manufacturing Orders """
 	_inherit = 'mrp.production'
@@ -39,7 +65,7 @@ class MrpProductionInherit(models.Model):
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
-			
+		
 		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
@@ -50,17 +76,36 @@ class MrpProductionInherit(models.Model):
 				no = no + "0"
 		else :
 			no = ""
-
-		if prefix != False:
-			lot_no = prefix+no+str(serial_no)
-		else:
-			lot_no = str(serial_no)
-		company.update({'serial_no' : serial_no})
-		lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+						
+		lot_serial_no = False			
+			
+		if self.bom_id and self.bom_id.prev_product_id:
+			if prefix == False:
+				prefix = 'F'
+				
+			prev_prod = self.bom_id.prev_product_id.id
+			
+			material = self.move_raw_ids.search([('product_id', '=', prev_prod)])
+			for m in material:
+				for ln in m.active_move_line_ids:
+					if ln.lot_id:
+						lot_no = prefix+ln.lot_id.name
+						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+						if not serialExists:
+							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+							break
+		#The Original Way	
+		if not lot_serial_no:
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
+				
+			company.update({'serial_no' : serial_no})
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})			
 		return lot_serial_no
 
 	def _workorders_create(self, bom, bom_data):
-
 		res = super(MrpProductionInherit, self)._workorders_create(bom,bom_data)
 		lot_id = self.create_custom_lot_no()
 		for lot in res:
@@ -78,7 +123,6 @@ class MrpworkorderInherit(models.Model):
 	def record_production(self):
 		if not self:
 			return True
-
 		self.ensure_one()
 		if self.qty_producing <= 0:
 			raise UserError(_('Please set the quantity you are currently producing. It should be different from zero.'))
