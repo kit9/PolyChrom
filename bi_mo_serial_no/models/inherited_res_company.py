@@ -155,7 +155,6 @@ class MrpworkorderInherit(models.Model):
 			if move_line.product_id.tracking != 'none' and not move_line.lot_id:
 				raise UserError(_('You should provide a lot/serial number for a component.'))
 			# Search other move_line where it could be added:
-			_logger.info('*** Final Lot Id: %s', self.final_lot_id.id)
 			lots = self.move_line_ids.filtered(lambda x: (x.lot_id.id == move_line.lot_id.id) and (not x.lot_produced_id) and (not x.done_move) and (x.product_id == move_line.product_id))
 			if lots:
 				lots[0].qty_done += move_line.qty_done
