@@ -21,31 +21,13 @@ class Company(models.Model):
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
-	#tracking = fields.Selection([('previous', 'Copy Previous Product'), ('serial', 'By Unique Serial Number'), ('lot', 'By Lots'), ('none', 'No Tracking')], string="Tracking", default='none')
 	digits_serial_no = fields.Integer(string='Digits :')
-	prefix_serial_no = fields.Char(string="Prefix :")
-	
-	#@api.onchange('tracking')
-	#def tracking_onchange(self):
-	#	if self.tracking == 'previous':
-	#		self.prefix_serial_no = 'F'
-	#	else:
-	#		self.prefix_serial_no = ''
-			
+	prefix_serial_no = fields.Char(string="Prefix :")	
 			
 class MrpBom(models.Model):
 	_inherit = 'mrp.bom'
 	
 	prev_product_id = fields.Many2one('product.product', 'Previous Product Lot/Serial No.', domain=lambda self: self._getfilter())
-	#, domain=[('id', '=', '0')]
-	
-	
-	#@api.model
-	#def create(self, values):
-	#	record = super(MrpBom, self).create(values)
-	#	record['product_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
-	#	record['product_tmpl_id'].update({'tracking':'previous', 'prefix_serial_no':'F'})
-	#	return record
 	
 	@api.model
 	def _getfilter(self):
@@ -74,7 +56,6 @@ class MrpProductionInherit(models.Model):
 	# lot_numbr = fields.Char(string="lot number")
 
 	def create_custom_lot_no(self):
-		_logger.info('*** running create_custom_lot_no')
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
 		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
 
@@ -84,7 +65,7 @@ class MrpProductionInherit(models.Model):
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
-		#prefix = 'DART-'
+		
 		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
@@ -95,46 +76,36 @@ class MrpProductionInherit(models.Model):
 				no = no + "0"
 		else :
 			no = ""
-			
-		if prefix != False:
-			lot_no = prefix+no+str(serial_no)
-		else:
-			lot_no = str(serial_no)
-			
-		_logger.info('***Product Name: %s', self.product_id.name)
+						
 		lot_serial_no = False			
 			
 		if self.bom_id and self.bom_id.prev_product_id:
 			if prefix == False:
 				prefix = 'F'
 				
-			_logger.info('***Prefix: %s', prefix)			
-			_logger.info('***Previous Product: %s', self.bom_id.prev_product_id.name)
-			
 			prev_prod = self.bom_id.prev_product_id.id
-			_logger.info('***Prev_Prod_Id: %s', prev_prod)
 			
 			material = self.move_raw_ids.search([('product_id', '=', prev_prod)])
 			for m in material:
 				for ln in m.active_move_line_ids:
-					_logger.info('*** Line info: %s', ln)
 					if ln.lot_id:
 						lot_no = prefix+ln.lot_id.name
 						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
 						if not serialExists:
-							_logger.info('*** Creating item: %s', lot_no)
 							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 							break
-			
+		#The Original Way	
 		if not lot_serial_no:
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
+				
 			company.update({'serial_no' : serial_no})
-			_logger.info('*** Creating the original way')
-			_logger.info('*** Creating item: %s', lot_no)
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})			
 		return lot_serial_no
 
 	def _workorders_create(self, bom, bom_data):
-		_logger.info('*** Calling: _workorders_create')
 		res = super(MrpProductionInherit, self)._workorders_create(bom,bom_data)
 		lot_id = self.create_custom_lot_no()
 		for lot in res:
@@ -152,7 +123,6 @@ class MrpworkorderInherit(models.Model):
 	def record_production(self):
 		if not self:
 			return True
-		_logger.info('*** Calling: record_production')
 		self.ensure_one()
 		if self.qty_producing <= 0:
 			raise UserError(_('Please set the quantity you are currently producing. It should be different from zero.'))
