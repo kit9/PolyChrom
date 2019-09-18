@@ -113,7 +113,7 @@ class MrpProductionInherit(models.Model):
 			lot.lot_numbr = lot_id.id
 		return res
 	
-	@api.multi
+	#@api.multi
     	def action_assign(self):
         	for production in self:
             		production.move_raw_ids._action_assign()
