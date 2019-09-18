@@ -120,11 +120,16 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** Over ride the original')
 	#		production.move_raw_ids._action_assign()
 			if production.bom_id.prev_product_id:
+				_logger.info('*** Has Previous Product: %s', production.bom_id.prev_product_id.name)
 				line = production.move_raw_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)], limit=1)
+				_logger.info('*** Has Move Line: %s', line)
 				work_order = production.workorder_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)], limit=1)
+				_logger.info('*** Has work_order: %s', work_order)
 				for lot in line.active_move_line_ids:
+					_logger.info('*** Set Lot: %s', lot)
 					lot_line = work_order.active_move_line_ids.search(['&', ('lot_id', '=', False), ('product_id', '=', work_order.product_id), ('work_order_id', '=', work_order.id)], limit=1)
-					lot_line.lot_id = line.lot_id
+					_logger.info('*** Set Lot_id: %s', lot.lot_id)
+					lot_line.lot_id = lot.lot_id
 		return True
 
 class MrpworkorderInherit(models.Model):
