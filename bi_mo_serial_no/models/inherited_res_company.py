@@ -116,7 +116,8 @@ class MrpProductionInherit(models.Model):
 	#@api.multi
     	def action_assign(self):
         	for production in self:
-            		production.move_raw_ids._action_assign()
+			_logger.info('*** Over ride the original')
+            		#production.move_raw_ids._action_assign()
 			#if production.bom_id.prev_product_id:
 			#	line = production.move_raw_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)], limit=1)
 			#	work_order = production.workorder_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)], limit=1)
