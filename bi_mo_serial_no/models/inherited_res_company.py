@@ -113,8 +113,9 @@ class MrpProductionInherit(models.Model):
 			lot.lot_numbr = lot_id.id
 		return res
 	
-	#@api.multi
-	#def action_assign(self):
+	@api.multi
+	def action_assign(self):
+		value = super(MrpProductionInherit, self).action_assign()
 	#	for production in self:
 	#	_logger.info('*** Over ride the original')
 	#		production.move_raw_ids._action_assign()
@@ -124,7 +125,7 @@ class MrpProductionInherit(models.Model):
 	#			for lot in lin.active_move_line_ids:
 	#				lot_line = work_order.active_move_line_ids.search(['&', ('lot_id', '=', False), ('product_id', '=', work_order.product_id), ('work_order_id', '=', work_order.id)], limit=1)
 	#				lot_line.lot_id = line.lot_id
-	#	return True
+		return True
 
 class MrpworkorderInherit(models.Model):
 	""" Manufacturing Orders """
