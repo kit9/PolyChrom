@@ -135,6 +135,7 @@ class MrpworkorderInherit(models.Model):
 		# (the new workorder tablet view allows registering consumed quantities for untracked components)
 		# we assume that only the theoretical quantity was used
 		for move in self.move_raw_ids:
+			_logger.info('*** Stock Move Line Ids: %s', move.active_move_line_ids)
 			if move.has_tracking == 'none' and (move.state not in ('done', 'cancel')) and move.bom_line_id\
 						and move.unit_factor and not move.move_line_ids.filtered(lambda ml: not ml.done_wo):
 				rounding = move.product_uom.rounding
