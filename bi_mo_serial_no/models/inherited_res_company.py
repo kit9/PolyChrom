@@ -108,12 +108,12 @@ class MrpProductionInherit(models.Model):
 	def _workorders_create(self, bom, bom_data):
 		res = super(MrpProductionInherit, self)._workorders_create(bom,bom_data)
 		lot_id = self.create_custom_lot_no()
-		for raw_move in self.move_raw_ids:
+		for raw_move in self.move_raw_ids.filtered(lambda move: move.product_id.id == self.bom_id.prev_product_id.id || not self.bom_id.prev_product_id):
 			_logger.info('*** Consumed Material: %s', raw_move.product_id.name)
 			_logger.info('*** Work Order: %s', raw_move.workorder_id.id)
 			_logger.info('*** Set using Lot: %s', raw_move.active_move_line_ids[0].lot_id)
 			
-			#raw_move.workorder_id.lot_id = raw_move.active_move_line_ids[0].lot_id
+			raw_move.workorder_id.lot_id = raw_move.active_move_line_ids[0].lot_id
 		for lot in res:
 			lot.final_lot_id = lot_id.id
 			lot.lot_numbr = lot_id.id
