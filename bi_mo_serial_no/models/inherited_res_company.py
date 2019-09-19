@@ -127,7 +127,10 @@ class MrpProductionInherit(models.Model):
 				_logger.info('*** Has work_order: %s', work_orders)
 				for wo in work_orders:
 					index = work_orders.index(wo)
-					wo.update({'lot_id',: line[index].active_move_line_ids[0].lot_id})
+					_logger.info('*** Index: %s', index)
+					#_logger.info('*** Set Lot: %s', lot)
+					#_logger.info('*** Set Lot: %s', lot)
+					#wo.update({'lot_id',: line[index].active_move_line_ids[wo.qty_producing - 1].lot_id})
 	#			for lot in line.active_move_line_ids:
 	#				_logger.info('*** Set Lot: %s', lot)
 	#				lot_line = work_order.active_move_line_ids.search(['&', ('lot_id', '=', False), ('product_id', '=', work_order.product_id), ('work_order_id', '=', work_order.id)], limit=1)
