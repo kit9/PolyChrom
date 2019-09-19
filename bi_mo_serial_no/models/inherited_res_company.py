@@ -108,29 +108,35 @@ class MrpProductionInherit(models.Model):
 	def _workorders_create(self, bom, bom_data):
 		res = super(MrpProductionInherit, self)._workorders_create(bom,bom_data)
 		lot_id = self.create_custom_lot_no()
+		for raw_move in self.move_raw_ids:
+			_logger.info('*** Consumed Material: %s', raw_move.product_id.name)
+			_logger.info('*** Work Order: %s', raw_move.workorder_id.id)
+			_logger.info('*** Set using Lot: %s', raw_move.active_move_line_ids[0].lot_id)
+			
+			#raw_move.workorder_id.lot_id = raw_move.active_move_line_ids[0].lot_id
 		for lot in res:
 			lot.final_lot_id = lot_id.id
 			lot.lot_numbr = lot_id.id
 		return res
 	
-	@api.multi
-	def action_assign(self):
-		value = super(MrpProductionInherit, self).action_assign()
-		for production in self:
-			_logger.info('*** Over ride the original')
+	#@api.multi
+	#def action_assign(self):
+	#	value = super(MrpProductionInherit, self).action_assign()
+	#	for production in self:
+	#		_logger.info('*** Over ride the original')
 	#		production.move_raw_ids._action_assign()
-			if production.bom_id.prev_product_id:
-				_logger.info('*** Has Previous Product: %s', production.bom_id.prev_product_id.name)
-				line = production.move_raw_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)])
-				_logger.info('*** Has Move Line: %s', line)
-				work_orders = production.workorder_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)])
-				_logger.info('*** Has work_order: %s', work_orders)
-				for wo in work_orders:
-					index = work_orders.index(wo)
-					_logger.info('*** Index: %s', index)
-					#_logger.info('*** Set Lot: %s', lot)
-					#_logger.info('*** Set Lot: %s', lot)
-					#wo.update({'lot_id',: line[index].active_move_line_ids[wo.qty_producing - 1].lot_id})
+	#		if production.bom_id.prev_product_id:
+	#			_logger.info('*** Has Previous Product: %s', production.bom_id.prev_product_id.name)
+	#			line = production.move_raw_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)])
+	#			_logger.info('*** Has Move Line: %s', line)
+	#			work_orders = production.workorder_ids.search(['&', ('product_id', '=', production.bom_id.prev_product_id.id), ('production_id', '=', production.id)])
+	#			_logger.info('*** Has work_order: %s', work_orders)
+	#			for wo in work_orders:
+	#				index = work_orders.index(wo)
+	#				_logger.info('*** Index: %s', index)
+	#				_logger.info('*** Set Lot: %s', lot)
+	#				_logger.info('*** Set Lot: %s', lot)
+	#				wo.update({'lot_id',: line[index].active_move_line_ids[wo.qty_producing - 1].lot_id})
 	#			for lot in line.active_move_line_ids:
 	#				_logger.info('*** Set Lot: %s', lot)
 	#				lot_line = work_order.active_move_line_ids.search(['&', ('lot_id', '=', False), ('product_id', '=', work_order.product_id), ('work_order_id', '=', work_order.id)], limit=1)
