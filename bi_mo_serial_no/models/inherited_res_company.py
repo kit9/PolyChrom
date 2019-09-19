@@ -113,7 +113,7 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** Work Order: %s', raw_move.workorder_id.id)
 			_logger.info('*** Set using Lot: %s', raw_move.active_move_line_ids[0].lot_id)
 			
-			raw_move.workorder_id.lot_id = raw_move.active_move_line_ids[0].lot_id
+			#raw_move.workorder_id.lot_id = raw_move.active_move_line_ids[0].lot_id
 		for lot in res:
 			lot.final_lot_id = lot_id.id
 			lot.lot_numbr = lot_id.id
