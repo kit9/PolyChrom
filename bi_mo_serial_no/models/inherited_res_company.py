@@ -124,7 +124,8 @@ class MrpProductionInherit(models.Model):
 		#	_logger.info('*** Move Raw filtered: %s', move[0].active_move_line_ids[0])
 		#	_logger.info('*** Use Lot: %s', move[0].active_move_line_ids[0].lot_id)
 		#	_logger.info('*** QA Exist: %s', lot.current_quality_check_id)
-			lot._create_checks()
+			if not lot.current_quality_check_id:
+				lot._create_checks()
 		#	_logger.info('*** Set Lot: %s', lot.current_quality_check_id.lot_id)
 		#	_logger.info('*** Set Lot: %s', lot.check_ids)
 			if move[0].active_move_line_ids:
