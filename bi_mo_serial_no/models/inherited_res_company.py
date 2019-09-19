@@ -119,7 +119,8 @@ class MrpProductionInherit(models.Model):
 			lot.lot_numbr = lot_id.id
 			move = self.move_raw_ids.filtered(lambda move: move.workorder_id.id == lot.id and (move.product_id.id == self.bom_id.prev_product_id.id or move.product_id.tracking == 'lot'))
 			_logger.info('*** Move Raw filtered: %s', move)
-			lot.lot_id = move[0].active_move_line_ids[0].lot_id.id
+			lot.current_quality_check_id.lot_id = move[0].active_move_line_ids[0].lot_id.id
+			#lot.update({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
 		return res
 	
 	#@api.multi
