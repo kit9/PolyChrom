@@ -157,7 +157,7 @@ class MrpProductionInherit(models.Model):
 	#				lot_line = work_order.active_move_line_ids.search(['&', ('lot_id', '=', False), ('product_id', '=', work_order.product_id), ('work_order_id', '=', work_order.id)], limit=1)
 	#				_logger.info('*** Set Lot_id: %s', lot.lot_id)
 	#				lot_line.lot_id = lot.lot_id
-		return True
+	#	return True
 
 class MrpworkorderInherit(models.Model):
 	""" Manufacturing Orders """
