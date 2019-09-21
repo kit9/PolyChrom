@@ -100,6 +100,7 @@ class MrpProductionInherit(models.Model):
 		#The Original Way	
 		if not lot_serial_no:
 			cnt = 0
+			serialExists = False
 			while not serialExists and cnt <=20:
 				if prefix != False:
 					lot_no = prefix+no+str(serial_no)
