@@ -286,21 +286,23 @@ class MrpworkorderInherit(models.Model):
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
 		
-		move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id or move.product_id.tracking == 'lot'))
-		if self.production_id.product_id.tracking == 'lot':
-			_logger.info('*** --Tracking is Lot')
-			self.current_quality_check_id.update({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
-		elif self.production_id.product_id.tracking == 'serial':
-			_logger.info('*** --Tracking is Serial')
-			prefix = self.production_id.product_id.prefix_serial_no
-			_logger.info('*** --Prefix is: %s', prefix)
-			new_lot = move[0].active_move_line_ids.filtered(lambda lot: prefix+lot.lot_id.name == self.final_lot_id.name)
-			_logger.info('*** --New Lot is: %s', new_lot)
-			#self.env['stock.production.lot'].search([('name', '=', self.production_id.product_id.name)])
-			if new_lot:
-				_logger.info('*** --Old WO Lot is: %s', self.current_quality_check_id.lot_id.id)
-				self.current_quality_check_id.update({'lot_id': new_lot[0].lot_id.id})
-				_logger.info('*** --New WO Lot is: %s', self.current_quality_check_id.lot_id.id)
+		if self.qty_producing > 0:
+			move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id or move.product_id.tracking == 'lot'))
+			if self.production_id.product_id.tracking == 'lot':
+				_logger.info('*** --Tracking is Lot')
+				self.current_quality_check_id.update({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
+			elif self.production_id.product_id.tracking == 'serial':
+				_logger.info('*** --Tracking is Serial')
+				prefix = self.production_id.product_id.prefix_serial_no
+				_logger.info('*** --Prefix is: %s', prefix)
+				if move and move[0].active_move_line_ids:
+					new_lot = move[0].active_move_line_ids.filtered(lambda lot: prefix+lot.lot_id.name == self.final_lot_id.name)
+					_logger.info('*** --New Lot is: %s', new_lot)
+				#self.env['stock.production.lot'].search([('name', '=', self.production_id.product_id.name)])
+				if new_lot:
+					_logger.info('*** --Old WO Lot is: %s', self.current_quality_check_id.lot_id.id)
+					self.current_quality_check_id.update({'lot_id': new_lot[0].lot_id.id})
+					_logger.info('*** --New WO Lot is: %s', self.current_quality_check_id.lot_id.id)
 
 		if float_compare(self.qty_produced, self.production_id.product_qty, precision_rounding=rounding) >= 0:
 			self.button_finish()
