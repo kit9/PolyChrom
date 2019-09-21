@@ -128,7 +128,7 @@ class MrpProductionInherit(models.Model):
 				lot._create_checks()
 		#	_logger.info('*** Set Lot: %s', lot.current_quality_check_id.lot_id)
 		#	_logger.info('*** Set Lot: %s', lot.check_ids)
-			if move[0].active_move_line_ids:
+			if move and move[0].active_move_line_ids:
 				lot.current_quality_check_id.update({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
 		#	_logger.info('*** Lot value: %s', lot.current_quality_check_id.lot_id)
 			#lot.update({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
