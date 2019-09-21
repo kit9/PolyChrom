@@ -85,7 +85,7 @@ class MrpProductionInherit(models.Model):
 				
 			prev_prod = self.bom_id.prev_product_id.id
 			
-			material = self.move_raw_ids.filtered(lambda mat: mat.product_id.id == prev_prod.id )
+			material = self.move_raw_ids.filtered(lambda mat: mat.product_id.id == prev_prod )
 			for m in material:
 				for ln in m.active_move_line_ids:
 					if ln.lot_id:
