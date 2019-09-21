@@ -253,16 +253,20 @@ class MrpworkorderInherit(models.Model):
 						for i in range(0, int(float_round(qty_todo, precision_digits=0))):
 							values = self._get_byproduct_move_line(by_product_move, 1)
 							self.env['stock.move.line'].create(values)
-
+		_logger.info('*** ## Next Work Order: %s', self.next_work_order_id)
+		_logger.info('*** ## Qty Produced: %s', self.qty_produced)
+		_logger.info('*** ## Qty Producing: %s', self.qty_producing)
+		_logger.info('*** ## Next Work Order: %s', self.next_work_order_id.current_quality_check_id)
 		# Update workorder quantity produced
 		self.qty_produced += self.qty_producing
 		if self.final_lot_id:
+			_logger.info('*** ## Final Lot Use Next on Work Order: %s', self.final_lot_id.use_next_on_work_order_id)
 			self.final_lot_id.use_next_on_work_order_id = self.next_work_order_id
 			self.final_lot_id = False
 
 
 
-		# One a piece is produced, you can launch the next work order
+		# Once a piece is produced, you can launch the next work order
 		self._start_nextworkorder()
 
 
