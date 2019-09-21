@@ -107,7 +107,7 @@ class MrpProductionInherit(models.Model):
 				else:
 					lot_no = str(serial_no)
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
-				if not serialExists:
+				if serialExists:
 					serial_no= serial_no + 1
 					cnt = cnt + 1
 				else:
