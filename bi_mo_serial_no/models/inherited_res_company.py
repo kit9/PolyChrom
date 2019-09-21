@@ -182,6 +182,7 @@ class MrpworkorderInherit(models.Model):
 
 		if (self.production_id.product_id.tracking != 'none') and not self.final_lot_id and self.move_raw_ids:
 			raise UserError(_('You should provide a lot/serial number for the final product.'))
+		#if (self.production_id.product_id.tracking != 'serial') and self.final_lot_id
 
 		# Update quantities done on each raw material line
 		# For each untracked component without any 'temporary' move lines,
@@ -293,6 +294,8 @@ class MrpworkorderInherit(models.Model):
 		_logger.info('*** --Final Lot: %s', self.final_lot_id.name)
 		self.final_lot_id = int(self.lot_numbr)
 		_logger.info('*** --Final Lot changed: %s', self.final_lot_id.name)
+		_logger.info('*** --Component: (%s -- %s)', self.component_id.name, self.component_id.tracking)
+		_logger.info('*** --Product: (%s -- %s)', self.product.name, self.product_id.tracking)
 		
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
