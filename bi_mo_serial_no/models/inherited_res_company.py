@@ -308,6 +308,8 @@ class MrpworkorderInherit(models.Model):
 			self._generate_lot_ids()
 			
 		_logger.info('*** --Final Lot: %s', self.final_lot_id.name)
+		new_lot_id = self.production_id.create_custom_lot_no()
+		self.lot_numbr = new_lot_id.id
 		self.final_lot_id = int(self.lot_numbr)
 		_logger.info('*** --Final Lot changed: %s', self.final_lot_id.name)
 		_logger.info('*** --Component: (%s -- %s)', self.component_id.name, self.component_id.tracking)
