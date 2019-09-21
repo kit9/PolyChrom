@@ -190,6 +190,7 @@ class MrpworkorderInherit(models.Model):
 	def record_production(self):
 		_logger.info('*** ## Work Order Current Lot: %s', self.lot_id)
 		_logger.info('*** ## Work Order Final Lot: %s', self.final_lot_id)
+		_logger.info('*** --Component Top: (%s -- %s)', self.component_id.name, self.component_id.tracking)
 		if not self:
 			return True
 		self.ensure_one()
