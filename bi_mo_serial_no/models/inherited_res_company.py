@@ -279,9 +279,9 @@ class MrpworkorderInherit(models.Model):
 			self.qty_producing = float_round(self.production_id.product_qty - self.qty_produced, precision_rounding=rounding)
 			self._generate_lot_ids()
 			
-		_logger.info('*** --Final Lot: %s', self.final_lot_id)
+		_logger.info('*** --Final Lot: %s', self.final_lot_id.name)
 		self.final_lot_id = int(self.lot_numbr)
-		_logger.info('*** --Final Lot changed: %s', self.final_lot_id)
+		_logger.info('*** --Final Lot changed: %s', self.final_lot_id.name)
 		
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
@@ -295,7 +295,9 @@ class MrpworkorderInherit(models.Model):
 				_logger.info('*** --Tracking is Serial')
 				prefix = self.production_id.product_id.prefix_serial_no
 				_logger.info('*** --Prefix is: %s', prefix)
-				if move and move[0].active_move_line_ids:
+				_logger.info('*** --Prefix is: %s', prefix)
+				if move and move[0].active_move_line_ids and lot.lot_id:
+					_logger.info('*** --Lot on QA Item is: %s', move[0].active_move_line_ids.lot_id.name)
 					new_lot = move[0].active_move_line_ids.filtered(lambda lot: prefix+lot.lot_id.name == self.final_lot_id.name)
 					_logger.info('*** --New Lot is: %s', new_lot)
 				#self.env['stock.production.lot'].search([('name', '=', self.production_id.product_id.name)])
