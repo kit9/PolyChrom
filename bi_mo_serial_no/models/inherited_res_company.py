@@ -296,9 +296,9 @@ class MrpworkorderInherit(models.Model):
 				prefix = self.production_id.product_id.prefix_serial_no
 				_logger.info('*** --Prefix is: %s', prefix)
 				_logger.info('*** --Prefix is: %s', prefix)
-				if move and move[0].active_move_line_ids and lot.lot_id:
+				if move and move[0].active_move_line_ids:
 					_logger.info('*** --Lot on QA Item is: %s', move[0].active_move_line_ids.lot_id.name)
-					new_lot = move[0].active_move_line_ids.filtered(lambda lot: prefix+lot.lot_id.name == self.final_lot_id.name)
+					new_lot = move[0].active_move_line_ids.filtered(lambda lot: lot.lot_id and prefix+lot.lot_id.name == self.final_lot_id.name)
 					_logger.info('*** --New Lot is: %s', new_lot)
 				#self.env['stock.production.lot'].search([('name', '=', self.production_id.product_id.name)])
 				if new_lot:
