@@ -172,6 +172,8 @@ class MrpworkorderInherit(models.Model):
 
 	@api.multi
 	def record_production(self):
+		_logger.info('*** ## Work Order Current Lot: %s', self.lot_id)
+		_logger.info('*** ## Work Order Final Lot: %s', self.final_lot_id)
 		if not self:
 			return True
 		self.ensure_one()
