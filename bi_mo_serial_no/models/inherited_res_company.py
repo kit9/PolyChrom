@@ -90,16 +90,27 @@ class MrpProductionInherit(models.Model):
 				for ln in m.active_move_line_ids:
 					if ln.lot_id:
 						lot_no = prefix+ln.lot_id.name
+						_logger.info('*** Append to Old Lot Name: %s', lot_no)
 						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+						_logger.info('*** Seial Exists: %s', serialExists)
 						if not serialExists:
+							_logger.info('*** Now Create it')
 							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 							break
 		#The Original Way	
 		if not lot_serial_no:
-			if prefix != False:
-				lot_no = prefix+no+str(serial_no)
-			else:
-				lot_no = str(serial_no)
+			cnt = 0
+			while not serialExists and cnt <=20:
+				if prefix != False:
+					lot_no = prefix+no+str(serial_no)
+				else:
+					lot_no = str(serial_no)
+				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+				if not serialExists:
+					serial_no= serial_no + 1
+					cnt = cnt + 1
+				else:
+					break
 				
 			company.update({'serial_no' : serial_no})
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})			
