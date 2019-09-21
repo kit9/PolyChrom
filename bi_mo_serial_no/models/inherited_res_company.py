@@ -106,6 +106,7 @@ class MrpProductionInherit(models.Model):
 		return lot_serial_no
 
 	def _workorders_create(self, bom, bom_data):
+		_logger.info('*** Creating Work Orders!!!')
 		res = super(MrpProductionInherit, self)._workorders_create(bom,bom_data)
 		lot_id = self.create_custom_lot_no()
 		for raw_move in self.move_raw_ids:
