@@ -295,7 +295,7 @@ class MrpworkorderInherit(models.Model):
 		self.final_lot_id = int(self.lot_numbr)
 		_logger.info('*** --Final Lot changed: %s', self.final_lot_id.name)
 		_logger.info('*** --Component: (%s -- %s)', self.component_id.name, self.component_id.tracking)
-		_logger.info('*** --Product: (%s -- %s)', self.product.name, self.product_id.tracking)
+		_logger.info('*** --Product: (%s -- %s)', self.product_id.name, self.product_id.tracking)
 		
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
