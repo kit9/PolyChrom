@@ -115,6 +115,11 @@ class MrpProductionInherit(models.Model):
 			
 			#raw_move.workorder_id.lot_id = raw_move.active_move_line_ids[0].lot_id
 		for lot in res:
+			_logger.info('*** @@Work Order: %s', lot)
+			if lot_id:
+				_logger.info('*** @@Unique Lot: (%s, %s)', lot_id.id, lot_id.name)
+			_logger.info('*** @@Tracking: (%s, %s)', lot.product_id.tracking, lot.product_id.name)
+			
 			lot.final_lot_id = lot_id.id
 			lot.lot_numbr = lot_id.id
 			move = self.move_raw_ids.filtered(lambda move: move.workorder_id.id == lot.id and (move.product_id.id == self.bom_id.prev_product_id.id or move.product_id.tracking == 'lot'))
