@@ -145,10 +145,11 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** Move Raw filtered: %s', move[0].active_move_line_ids[0])
 			_logger.info('*** Use Lot: %s', move[0].active_move_line_ids[0].lot_id)
 			_logger.info('*** QA Exist: %s', lot.current_quality_check_id)
-			qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
+			qa = self.env['quality.check'].search([('workorder_id', '=', self.id)], limit=1)
 			_logger.info('*** QA Exist: %s', qa)
 			_logger.info('*** QA Exist: %s', qa[0].product_id)
 			_logger.info('*** QA Exist: %s', qa[0].component_id)
+			qa.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
 		#	if not lot.current_quality_check_id:
 		#		lot._create_checks()
 		#	_logger.info('*** Set Lot: %s', lot.current_quality_check_id.lot_id)
@@ -190,18 +191,18 @@ class MrpworkorderInherit(models.Model):
 
 	lot_numbr = fields.Char(string="lot number")
 	
-	def _create_checks(self):
-		_logger.info('*** ### Create Override')
-		res = super(MrpworkorderInherit, self)._create_checks()
-		move = self.move_raw_ids.filtered(lambda move: move.workorder_id.id == lot.id and (move.product_id.id == self.bom_id.prev_product_id.id))
-		
-		if move and move[0].active_move_line_ids:
-			_logger.info('*** ### Set Lot Number with serial')
-			self.current_quality_check_id.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
-		elif self.current_quality_check_id.component_id == 'lot':
-			_logger.info('*** ### Set Lot Number with Lot')
-			lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
-			self.current_quality_check_id.write({'lot_id': lot_id.id})
+	#def _create_checks(self):
+	#	_logger.info('*** ### Create Override')
+	#	res = super(MrpworkorderInherit, self)._create_checks()
+	#	move = self.move_raw_ids.filtered(lambda move: move.workorder_id.id == lot.id and (move.product_id.id == self.bom_id.prev_product_id.id))
+	#	
+	#	if move and move[0].active_move_line_ids:
+	#		_logger.info('*** ### Set Lot Number with serial')
+	#		self.current_quality_check_id.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
+	#	elif self.current_quality_check_id.component_id == 'lot':
+	#		_logger.info('*** ### Set Lot Number with Lot')
+	#		lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
+	#		self.current_quality_check_id.write({'lot_id': lot_id.id})
 
 	@api.multi
 	def record_production(self):
@@ -361,12 +362,14 @@ class MrpworkorderInherit(models.Model):
 						_logger.info('*** --New Lot is: %s', new_lot)
 					if new_lot:
 						_logger.info('*** --Old WO Lot is: %s', self.current_quality_check_id.lot_id.id)
-						self.current_quality_check_id.write({'lot_id': new_lot[0].lot_id.id})
+						qa.write({'lot_id': new_lot[0].lot_id.id})
+						#self.current_quality_check_id.write({'lot_id': new_lot[0].lot_id.id})
 						_logger.info('*** --New WO Lot is: %s', self.current_quality_check_id.lot_id.id)
 				elif component_id.tracking == 'lot':
 					_logger.info('*** --Component Name: (%s, %s)', component_id.name, component_id.id)
 					lot_id = self.final_lot_id.search([('product_id', '=', component_id.id)])
-					self.current_quality_check_id.write({'lot_id': lot_id.id})
+					#self.current_quality_check_id.write({'lot_id': lot_id.id})
+					qa.write({'lot_id': lot_id.id})
 					
 			#if self.component_id:
 			#	_logger.info('*** --Component Name: %s', self.component_id.name)
