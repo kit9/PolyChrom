@@ -147,8 +147,8 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** QA Exist: %s', lot.current_quality_check_id)
 			qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
 			_logger.info('*** QA Exist: %s', qa)
-			_logger.info('*** QA Exist: %s', qa.product_id)
-			_logger.info('*** QA Exist: %s', qa.component_id)
+			_logger.info('*** QA Exist: %s', qa[0].product_id)
+			_logger.info('*** QA Exist: %s', qa[0].component_id)
 		#	if not lot.current_quality_check_id:
 		#		lot._create_checks()
 		#	_logger.info('*** Set Lot: %s', lot.current_quality_check_id.lot_id)
@@ -221,8 +221,8 @@ class MrpworkorderInherit(models.Model):
 		
 		qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
 		_logger.info('*** QA Exist: %s', qa)
-		_logger.info('*** QA Exist: %s', qa.product_id)
-		_logger.info('*** QA Exist: %s', qa.component_id)
+		_logger.info('*** QA Exist: %s', qa[0].product_id)
+		_logger.info('*** QA Exist: %s', qa[0].component_id)
 
 		# Update quantities done on each raw material line
 		# For each untracked component without any 'temporary' move lines,
