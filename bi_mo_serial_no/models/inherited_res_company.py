@@ -343,7 +343,7 @@ class MrpworkorderInherit(models.Model):
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
 			
-		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)])
+		qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
 		_logger.info('*** ^^^ QA Exist: %s', qa)
 		_logger.info('*** ^^^ QA Exist: %s', qa.quality_state)
 		_logger.info('*** ^^^ QA Exist: %s', qa.product_id)
