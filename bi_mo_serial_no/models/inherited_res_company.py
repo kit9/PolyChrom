@@ -22,7 +22,16 @@ class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
 	digits_serial_no = fields.Integer(string='Digits :')
-	prefix_serial_no = fields.Char(string="Prefix :")	
+	prefix_serial_no = fields.Char(string="Prefix :")
+
+class QualityCheckInherit(models.Model):
+	_inherit = "quality.check"
+
+	@api.model
+	def create(self, values):
+		record = super(QualityCheckInherit, self).create(values)
+		_logger.info('*** OVERRIDING QUALITY CHECK **** !!!')
+		return record
 			
 class MrpBom(models.Model):
 	_inherit = 'mrp.bom'
