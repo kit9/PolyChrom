@@ -338,6 +338,7 @@ class MrpworkorderInherit(models.Model):
 								   '&', ('product_id', '=', False), ('product_tmpl_id', '=', production.product_id.product_tmpl_id.id)])
 			for point in points:
 				# Check if we need a quality control for this point
+				_logger.info('*** --Point: %s', point)
 				if point.check_execute_now():
 					if point.component_id:
 						component_list.append(point.component_id.id)
@@ -366,6 +367,7 @@ class MrpworkorderInherit(models.Model):
 			components = move_raw_ids.mapped('product_id').filtered(lambda product: product.tracking != 'none' and product.id not in component_list)
 			quality_team_id = self.env['quality.alert.team'].search([], limit=1).id
 			for component in components:
+				_logger.info('*** --Component: %s', component)
 				moves = wo.move_raw_ids.filtered(lambda m: m.state not in ('done', 'cancel') and m.product_id == component)
 				qty_done = 1.0
 				if component.tracking != 'serial':
@@ -381,13 +383,17 @@ class MrpworkorderInherit(models.Model):
 					# if and only if the produced quantities at the time they were created are equal.
 					'finished_product_sequence': wo.qty_produced,
 				}
-				if component.id == self.production_id.bom_id.prev_product_id.id and component.tracking == 'serial' and move and move[0].active_move_line_ids:
-					vals['lot_id'] = move[0].active_move_line_ids.filtered(lambda lot: lot.lot_id and prefix+lot.lot_id.name == self.final_lot_id.name)
+				if component.id == self.production_id.bom_id.prev_product_id.id and move and move[0].active_move_line_ids:
+					if component.tracking == 'serial':
+						vals['lot_id'] = move[0].active_move_line_ids.filtered(lambda lot: lot.lot_id and prefix+lot.lot_id.name == self.final_lot_id.name)
+					elif component.tracking == 'lot':
+						vals['lot_id'] = self.env['stock.production.lot'].saerch([('product_id', '=', component_id)], limit=1)
 				
 				self.env['quality.check'].create(vals)
 
 			# If last step add all the by_product since they are not consumed by a specific operation.
 			if not wo.next_work_order_id:
+				_logger.info('*** -- not wo.next_work_order_id')
 				finished_moves = production.move_finished_ids.filtered(lambda m: not m.workorder_id)
 				tracked_by_products = finished_moves.mapped('product_id').filtered(lambda product: product.tracking != 'none' and product != production.product_id)
 				for by_product in tracked_by_products:
