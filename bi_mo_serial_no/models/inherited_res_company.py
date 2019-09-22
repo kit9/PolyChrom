@@ -145,7 +145,7 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** Move Raw filtered: %s', move[0].active_move_line_ids[0])
 			_logger.info('*** Use Lot: %s', move[0].active_move_line_ids[0].lot_id)
 			_logger.info('*** QA Exist: %s', lot.current_quality_check_id)
-			qa = self.env['quality.check'].search([('workorder_id', '=', self.id)], limit=1)
+			qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)], limit=1)
 			_logger.info('*** QA Exist: %s', qa)
 			_logger.info('*** QA Exist: %s', qa[0].product_id)
 			_logger.info('*** QA Exist: %s', qa[0].component_id)
@@ -220,7 +220,7 @@ class MrpworkorderInherit(models.Model):
 		#if (self.production_id.product_id.tracking != 'serial') and self.final_lot_id
 		
 		
-		qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
+		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)], limit=1)
 		_logger.info('*** QA Exist: %s', qa)
 		_logger.info('*** QA Exist: %s', qa[0].product_id)
 		_logger.info('*** QA Exist: %s', qa[0].component_id)
