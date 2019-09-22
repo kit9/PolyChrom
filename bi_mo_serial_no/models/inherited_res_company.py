@@ -147,8 +147,8 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** QA Exist: %s', lot.current_quality_check_id)
 			qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)], limit=1)
 			_logger.info('*** QA Exist: %s', qa)
-			_logger.info('*** QA Exist: %s', qa[0].product_id)
-			_logger.info('*** QA Exist: %s', qa[0].component_id)
+			_logger.info('*** QA Exist: %s', qa.product_id)
+			_logger.info('*** QA Exist: %s', qa.component_id)
 			qa.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
 		#	if not lot.current_quality_check_id:
 		#		lot._create_checks()
