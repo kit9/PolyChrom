@@ -335,7 +335,7 @@ class MrpworkorderInherit(models.Model):
 						_logger.info('*** --Old WO Lot is: %s', self.current_quality_check_id.lot_id.id)
 						self.current_quality_check_id.write({'lot_id': new_lot[0].lot_id.id})
 						_logger.info('*** --New WO Lot is: %s', self.current_quality_check_id.lot_id.id)
-				else: component_id.tracking == 'lot'
+				elif component_id.tracking == 'lot':
 					_logger.info('*** --Component Name: (%s, %s)', component_id.name, component_id.id)
 					lot_id = self.final_lot_id.search([('product_id', '=', component_id.id)])
 					self.current_quality_check_id.write({'lot_id': lot_id.id})
