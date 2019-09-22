@@ -197,6 +197,8 @@ class MrpworkorderInherit(models.Model):
 		if self.qty_producing <= 0:
 			raise UserError(_('Please set the quantity you are currently producing. It should be different from zero.'))
 
+		if not self.current_quality_check_id:
+			self._create_checks()
 		if (self.production_id.product_id.tracking != 'none') and not self.final_lot_id and self.move_raw_ids:
 			raise UserError(_('You should provide a lot/serial number for the final product.'))
 		#if (self.production_id.product_id.tracking != 'serial') and self.final_lot_id
@@ -319,102 +321,35 @@ class MrpworkorderInherit(models.Model):
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
 		
+		if self.qty_producing > 0:
+			move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id and move.product_id.tracking == 'serial'))
+			if self.product_id.tracking == 'serial':
+				_logger.info('*** --Tracking is Serial')
+				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
+				prefix = self.production_id.product_id.prefix_serial_no				
+					
+				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
+				component_id = self.current_quality_check_id.component_id
+				_logger.info('*** --Component Name: (%s, %s, %s)', component_id.name, component_id.id, component_id.tracking)
+				
+				if self.production_id.bom_id.prev_product_id:					
+					_logger.info('*** --Prefix is: %s', prefix)
+					if move and move[0].active_move_line_ids:
+						new_lot = move[0].active_move_line_ids.filtered(lambda lot: lot.lot_id and prefix+lot.lot_id.name == self.final_lot_id.name)
+						_logger.info('*** --New Lot is: %s', new_lot)
+					if new_lot:
+						_logger.info('*** --Old WO Lot is: %s', self.current_quality_check_id.lot_id.id)
+						self.current_quality_check_id.write({'lot_id': new_lot[0].lot_id.id})
+						_logger.info('*** --New WO Lot is: %s', self.current_quality_check_id.lot_id.id)
+				elif component_id.tracking == 'lot':
+					_logger.info('*** --Component Name: (%s, %s)', component_id.name, component_id.id)
+					lot_id = self.final_lot_id.search([('product_id', '=', component_id.id)])
+					self.current_quality_check_id.write({'lot_id': lot_id.id})
+					
+			#if self.component_id:
+			#	_logger.info('*** --Component Name: %s', self.component_id.name)
+			#	_logger.info('*** --Component Name: %s', self.component_id.tracking)
 
 		if float_compare(self.qty_produced, self.production_id.product_qty, precision_rounding=rounding) >= 0:
 			self.button_finish()
 		return True
-	
-	def _create_checks(self):
-		for wo in self:
-			# Track components which have a control point
-			component_list = []
-			move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id and move.product_id.tracking == 'serial'))
-			prefix = self.production_id.product_id.prefix_serial_no
-			
-			production = wo.production_id
-			points = self.env['quality.point'].search([('operation_id', '=', wo.operation_id.id),
-								   ('picking_type_id', '=', production.picking_type_id.id),
-								   '|', ('product_id', '=', production.product_id.id),
-								   '&', ('product_id', '=', False), ('product_tmpl_id', '=', production.product_id.product_tmpl_id.id)])
-			for point in points:
-				# Check if we need a quality control for this point
-				_logger.info('*** --Point: %s', point)
-				if point.check_execute_now():
-					if point.component_id:
-						component_list.append(point.component_id.id)
-					moves = wo.move_raw_ids.filtered(lambda m: m.state not in ('done', 'cancel') and m.product_id == point.component_id and m.workorder_id == wo)
-					qty_done = 1.0
-					if point.component_id and moves and point.component_id.tracking != 'serial':
-						qty_done = float_round(sum(moves.mapped('unit_factor')), precision_rounding=moves[:1].product_uom.rounding)
-					# Do not generate qc for control point of type register_consumed_materials if the component is not consummed in this wo.
-					if not point.component_id or moves:
-						self.env['quality.check'].create({'workorder_id': wo.id,
-										  'point_id': point.id,
-										  'team_id': point.team_id.id,
-										  'product_id': production.product_id.id,
-										  # Fill in the full quantity by default
-										  'qty_done': qty_done,
-										  # Two steps are from the same production
-										  # if and only if the produced quantities at the time they were created are equal.
-										  'finished_product_sequence': wo.qty_produced,
-										 })
-
-			# Generate quality checks associated with unreferenced components
-			move_raw_ids = production.move_raw_ids.filtered(lambda m: m.operation_id == wo.operation_id)
-			# If last step, add move lines not associated with any operation
-			if not wo.next_work_order_id:
-				move_raw_ids += production.move_raw_ids.filtered(lambda m: not m.operation_id)
-			components = move_raw_ids.mapped('product_id').filtered(lambda product: product.tracking != 'none' and product.id not in component_list)
-			quality_team_id = self.env['quality.alert.team'].search([], limit=1).id
-			for component in components:
-				_logger.info('*** --Component: %s', component)
-				moves = wo.move_raw_ids.filtered(lambda m: m.state not in ('done', 'cancel') and m.product_id == component)
-				qty_done = 1.0
-				if component.tracking != 'serial':
-					qty_done = float_round(sum(moves.mapped('unit_factor')) * wo.qty_producing, precision_rounding=moves[:1].product_uom.rounding)
-				vals = {
-					'workorder_id': wo.id,
-					'product_id': production.product_id.id,
-					'component_id': component.id,
-					'team_id': quality_team_id,
-					# Fill in the full quantity by default
-					'qty_done': float_round(sum(moves.mapped('unit_factor')) * wo.qty_producing, precision_rounding=moves[:1].product_uom.rounding) if component.tracking != 'serial' else 1.0,
-					# Two steps are from the same production
-					# if and only if the produced quantities at the time they were created are equal.
-					'finished_product_sequence': wo.qty_produced,
-				}
-				if component.id == self.production_id.bom_id.prev_product_id.id and move and move[0].active_move_line_ids:
-					if component.tracking == 'serial':
-						vals['lot_id'] = move[0].active_move_line_ids.filtered(lambda lot: lot.lot_id and prefix+lot.lot_id.name == self.final_lot_id.name)
-					elif component.tracking == 'lot':
-						vals['lot_id'] = self.env['stock.production.lot'].saerch([('product_id', '=', component_id)], limit=1)
-				
-				self.env['quality.check'].create(vals)
-
-			# If last step add all the by_product since they are not consumed by a specific operation.
-			if not wo.next_work_order_id:
-				_logger.info('*** -- not wo.next_work_order_id')
-				finished_moves = production.move_finished_ids.filtered(lambda m: not m.workorder_id)
-				tracked_by_products = finished_moves.mapped('product_id').filtered(lambda product: product.tracking != 'none' and product != production.product_id)
-				for by_product in tracked_by_products:
-					moves = finished_moves.filtered(lambda m: m.state not in ('done', 'cancel') and m.product_id == by_product)
-					if by_product.tracking == 'serial':
-						qty_done = 1.0
-					else:
-						qty_done = float_round(sum(moves.mapped('unit_factor')) * wo.qty_producing, precision_rounding=moves[:1].product_uom.rounding)
-					self.env['quality.check'].create({
-						'workorder_id': wo.id,
-						'product_id': production.product_id.id,
-						'component_id': by_product.id,
-						'team_id': quality_team_id,
-						# Fill in the full quantity by default
-						'qty_done': qty_done,
-						'component_is_byproduct': True,
-						# Two steps are from the same production
-						# if and only if the produced quantities at the time they were created are equal.
-						'finished_product_sequence': wo.qty_produced,
-					})
-					
-			# Set default quality_check
-			wo.skip_completed_checks = False
-			wo._change_quality_check(position=0)
