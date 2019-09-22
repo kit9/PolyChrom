@@ -323,6 +323,7 @@ class MrpworkorderInherit(models.Model):
 			move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id and move.product_id.tracking == 'serial'))
 			if self.product_id.tracking == 'serial':
 				_logger.info('*** --Tracking is Serial')
+				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
 				prefix = self.production_id.product_id.prefix_serial_no
 				component_id = self.current_quality_check_id.component_id
 				_logger.info('*** --Component Name: (%s, %s, %s)', component_id.name, component_id.id, component_id.tracking)
