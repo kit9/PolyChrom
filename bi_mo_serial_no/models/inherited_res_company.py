@@ -350,7 +350,7 @@ class MrpworkorderInherit(models.Model):
 			_logger.info('*** ^^^ QA Exist: %s', q.quality_state)
 			_logger.info('*** ^^^ QA Exist: %s', q.product_id)
 			_logger.info('*** ^^^ QA Exist: %s', q.component_id)
-		qa = qa.search(lambda q: q.quality_state == 'none')
+		qa = qa.filtered(lambda q: q.quality_state == 'none')
 		if self.qty_producing > 0:
 			move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id and move.product_id.tracking == 'serial'))
 			if self.product_id.tracking == 'serial':
