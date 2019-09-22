@@ -222,8 +222,8 @@ class MrpworkorderInherit(models.Model):
 		
 		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)], limit=1)
 		_logger.info('*** QA Exist: %s', qa)
-		_logger.info('*** QA Exist: %s', qa[0].product_id)
-		_logger.info('*** QA Exist: %s', qa[0].component_id)
+		_logger.info('*** QA Exist: %s', qa.product_id)
+		_logger.info('*** QA Exist: %s', qa.component_id)
 
 		# Update quantities done on each raw material line
 		# For each untracked component without any 'temporary' move lines,
