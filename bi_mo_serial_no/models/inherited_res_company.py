@@ -220,7 +220,7 @@ class MrpworkorderInherit(models.Model):
 		#if (self.production_id.product_id.tracking != 'serial') and self.final_lot_id
 		
 		
-		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)], limit=1)
+		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)])
 		_logger.info('*** QA Exist: %s', qa)
 		_logger.info('*** QA Exist: %s', qa.product_id)
 		_logger.info('*** QA Exist: %s', qa.component_id)
@@ -342,6 +342,12 @@ class MrpworkorderInherit(models.Model):
 		
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
+			
+		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)])
+		_logger.info('*** ^^^ QA Exist: %s', qa)
+		_logger.info('*** ^^^ QA Exist: %s', qa.quality_state)
+		_logger.info('*** ^^^ QA Exist: %s', qa.product_id)
+		_logger.info('*** ^^^ QA Exist: %s', qa.component_id)
 		
 		if self.qty_producing > 0:
 			move = self.production_id.move_raw_ids.filtered(lambda move: move.workorder_id.id == self.id and (move.product_id.id == self.production_id.bom_id.prev_product_id.id and move.product_id.tracking == 'serial'))
