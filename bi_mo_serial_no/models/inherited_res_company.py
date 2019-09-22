@@ -145,6 +145,10 @@ class MrpProductionInherit(models.Model):
 			_logger.info('*** Move Raw filtered: %s', move[0].active_move_line_ids[0])
 			_logger.info('*** Use Lot: %s', move[0].active_move_line_ids[0].lot_id)
 			_logger.info('*** QA Exist: %s', lot.current_quality_check_id)
+			qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
+			_logger.info('*** QA Exist: %s', qa)
+			_logger.info('*** QA Exist: %s', qa.product_id)
+			_logger.info('*** QA Exist: %s', qa.component_id)
 		#	if not lot.current_quality_check_id:
 		#		lot._create_checks()
 		#	_logger.info('*** Set Lot: %s', lot.current_quality_check_id.lot_id)
@@ -213,6 +217,12 @@ class MrpworkorderInherit(models.Model):
 		if (self.production_id.product_id.tracking != 'none') and not self.final_lot_id and self.move_raw_ids:
 			raise UserError(_('You should provide a lot/serial number for the final product.'))
 		#if (self.production_id.product_id.tracking != 'serial') and self.final_lot_id
+		
+		
+		qa = self.env['quality.check'].search([('workorder_id', '=', self.id)])
+		_logger.info('*** QA Exist: %s', qa)
+		_logger.info('*** QA Exist: %s', qa.product_id)
+		_logger.info('*** QA Exist: %s', qa.component_id)
 
 		# Update quantities done on each raw material line
 		# For each untracked component without any 'temporary' move lines,
