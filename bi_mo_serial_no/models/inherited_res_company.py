@@ -196,9 +196,7 @@ class MrpworkorderInherit(models.Model):
 		self.ensure_one()
 		if self.qty_producing <= 0:
 			raise UserError(_('Please set the quantity you are currently producing. It should be different from zero.'))
-
-		if not self.current_quality_check_id:
-			self._create_checks()
+		
 		if (self.production_id.product_id.tracking != 'none') and not self.final_lot_id and self.move_raw_ids:
 			raise UserError(_('You should provide a lot/serial number for the final product.'))
 		#if (self.production_id.product_id.tracking != 'serial') and self.final_lot_id
@@ -327,7 +325,8 @@ class MrpworkorderInherit(models.Model):
 				_logger.info('*** --Tracking is Serial')
 				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
 				prefix = self.production_id.product_id.prefix_serial_no				
-					
+				if not self.current_quality_check_id:
+					self._create_checks()
 				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
 				component_id = self.current_quality_check_id.component_id
 				_logger.info('*** --Component Name: (%s, %s, %s)', component_id.name, component_id.id, component_id.tracking)
