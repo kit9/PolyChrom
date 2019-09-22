@@ -325,8 +325,8 @@ class MrpworkorderInherit(models.Model):
 				_logger.info('*** --Tracking is Serial')
 				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
 				prefix = self.production_id.product_id.prefix_serial_no				
-				if not self.current_quality_check_id:
-					self._create_checks()
+				#if not self.current_quality_check_id:
+				#	self._create_checks()
 				_logger.info('*** --Quality Check: %s', self.current_quality_check_id)
 				component_id = self.current_quality_check_id.component_id
 				_logger.info('*** --Component Name: (%s, %s, %s)', component_id.name, component_id.id, component_id.tracking)
