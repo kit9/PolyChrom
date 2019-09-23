@@ -29,7 +29,7 @@ class QualityCheckInherit(models.Model):
 
 	@api.model
 	def create(self, values):
-		_logger.info('*** OVERRIDING QUALITY CHECK **** !!!')		
+		#_logger.info('*** OVERRIDING QUALITY CHECK **** !!!')		
 		record = super(QualityCheckInherit, self).create(values)
 		lot_id = record['lot_id']
 		component = record['component_id']
@@ -40,23 +40,15 @@ class QualityCheckInherit(models.Model):
 			if component.tracking == 'serial':
 				move = wo.production_id.move_raw_ids.filtered(lambda move: move.product_id.id == wo.production_id.bom_id.prev_product_id.id)
 				if move_line and move_line.lot_id and move_line.product_id.id == wo.production_id.bom_id.prev_product_id.id:
-					_logger.info('*** Grab Serial from stock.move.line')
+					#_logger.info('*** Grab Serial from stock.move.line')
 					record['lot_id'] = move_line.lot_id.id
 				elif move and move[0].active_move_line_ids:
-					_logger.info('*** Grab Serial from Active stock.move.line')
+					#_logger.info('*** Grab Serial from Active stock.move.line')
 					record['lot_id'] = move[0].active_move_line_ids[0].lot_id.id
 			else:
-				_logger.info('*** Grab Lot for component')
+				#_logger.info('*** Grab Lot for component')
 				lot_id = self.env['stock.production.lot'].search([('product_id', '=', component.id)], limit=1)
 				record['lot_id'] = lot_id.id
-		#
-		#if move and move[0].active_move_line_ids:
-		#	_logger.info('*** ### Set Lot Number with serial')
-		#	self.current_quality_check_id.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
-		#elif self.current_quality_check_id.component_id == 'lot':
-		#	_logger.info('*** ### Set Lot Number with Lot')
-		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
-		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
 		
 		return record
 			
@@ -123,16 +115,27 @@ class MrpProductionInherit(models.Model):
 			
 			material = self.move_raw_ids.filtered(lambda mat: mat.product_id.id == prev_prod )
 			for m in material:
-				for ln in m.active_move_line_ids:
-					if ln.lot_id:
-						lot_no = prefix+ln.lot_id.name
-						_logger.info('*** Append to Old Lot Name: %s', lot_no)
-						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
-						_logger.info('*** Seial Exists: %s', serialExists)
-						if not serialExists:
-							_logger.info('*** Now Create it')
-							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-							break
+				ln = m.active_move_line_ids.filtered(lambda aml: aml.state == 'assigned')
+				if ln and ln[0] and ln[0].lot_id:
+					lot_no = prefix+ln[0].lot_id.name
+					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+					if not serialExists:
+						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+						break
+					else
+						lot_serial_no = serialExists
+						break
+						
+			#	for ln in m.active_move_line_ids:
+			#		if ln.lot_id:
+			#			lot_no = prefix+ln.lot_id.name
+			#			_logger.info('*** Append to Old Lot Name: %s', lot_no)
+			#			serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+			#			_logger.info('*** Serial Exists: %s', serialExists)
+			#			if not serialExists:
+			#				_logger.info('*** Now Create it')
+			#				lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+			#				break
 		#The Original Way	
 		if not lot_serial_no:
 			cnt = 0
