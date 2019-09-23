@@ -46,7 +46,7 @@ class QualityCheckInherit(models.Model):
 					serial_id = move[0].active_move_line_ids.filtered(lambda aml: not aml.lot_produced_id)
 					_logger.info('*** Grab Serial from Active stock.move.line')
 					if serial_id:
-						record['lot_id'] = serial_id.lot_id.id
+						record['lot_id'] = serial_id[0].lot_id.id
 			else:
 				#_logger.info('*** Grab Lot for component')
 				lot_id = self.env['stock.production.lot'].search([('product_id', '=', component.id)], limit=1)
@@ -128,7 +128,7 @@ class MrpProductionInherit(models.Model):
 						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 						break
 					else:
-						lot_serial_no = serialExists
+						lot_serial_no = serialExists[0]
 						break
 						
 			#	for ln in m.active_move_line_ids:
