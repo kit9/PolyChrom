@@ -40,11 +40,13 @@ class QualityCheckInherit(models.Model):
 			if component.tracking == 'serial':
 				move = wo.production_id.move_raw_ids.filtered(lambda move: move.product_id.id == wo.production_id.bom_id.prev_product_id.id)
 				if move_line and move_line.lot_id and move_line.product_id.id == wo.production_id.bom_id.prev_product_id.id:
-					#_logger.info('*** Grab Serial from stock.move.line')
+					_logger.info('*** Grab Serial from stock.move.line')
 					record['lot_id'] = move_line.lot_id.id
 				elif move and move[0].active_move_line_ids:
-					#_logger.info('*** Grab Serial from Active stock.move.line')
-					record['lot_id'] = move[0].active_move_line_ids[0].lot_id.id
+					serial_id = move[0].active_move_line_ids.filtered(lambda aml: not aml.lot_produced_id)
+					_logger.info('*** Grab Serial from Active stock.move.line')
+					if serial_id:
+						record['lot_id'] = serial_id.lot_id.id
 			else:
 				#_logger.info('*** Grab Lot for component')
 				lot_id = self.env['stock.production.lot'].search([('product_id', '=', component.id)], limit=1)
@@ -116,9 +118,9 @@ class MrpProductionInherit(models.Model):
 			material = self.move_raw_ids.filtered(lambda mat: mat.product_id.id == prev_prod )
 			for m in material:
 				for am in m.active_move_line_ids:
-					_logger.info('*** $$ Active Move Line: (%s -- %s)', am.lot_id.name, am.lot_id.id)
+					_logger.info('*** $$ Active Move Line: (%s -- %s -- %s)', am.lot_id.name, am.lot_id.id, am.state)
 					_logger.info('*** $$ Active Produced Move Line: (%s -- %s)', am.lot_produced_id.name, am.lot_produced_id.id)
-				ln = m.active_move_line_ids.filtered(lambda aml: aml.state == 'assigned')
+				ln = m.active_move_line_ids.filtered(lambda aml: aml.state == 'assigned' and not aml.lot_produced_id)
 				if ln and ln[0] and ln[0].lot_id:
 					lot_no = prefix+ln[0].lot_id.name
 					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
