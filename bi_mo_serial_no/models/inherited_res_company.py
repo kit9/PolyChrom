@@ -235,6 +235,11 @@ class MrpworkorderInherit(models.Model):
 
 	lot_numbr = fields.Char(string="lot number")
 	
+	@api.onchange('lot_id')
+	def _onchange_lot_id(self):
+		_logger.info('*** Onchange Lot ID: %s', self.current_quality_check_id.lot_id)
+		_logger.info('*** Onchange Final Lot ID: %s', self.final_lot_id)
+	
 	def _create_checks(self):
 		_logger.info('*** ### Create Override')
 		#res = super(MrpworkorderInherit, self)._create_checks()
