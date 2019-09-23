@@ -122,7 +122,7 @@ class MrpProductionInherit(models.Model):
 					if not serialExists:
 						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 						break
-					else
+					else:
 						lot_serial_no = serialExists
 						break
 						
