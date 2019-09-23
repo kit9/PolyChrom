@@ -116,7 +116,8 @@ class MrpProductionInherit(models.Model):
 			material = self.move_raw_ids.filtered(lambda mat: mat.product_id.id == prev_prod )
 			for m in material:
 				for am in m.active_move_line_ids:
-					_logger.info('*** Active Move Line: (%s -- %s)', am.lot_id.name, am.lot_id.id)
+					_logger.info('*** $$ Active Move Line: (%s -- %s)', am.lot_id.name, am.lot_id.id)
+					_logger.info('*** $$ Active Produced Move Line: (%s -- %s)', am.lot_produced_id.name, am.lot_produced_id.id)
 				ln = m.active_move_line_ids.filtered(lambda aml: aml.state == 'assigned')
 				if ln and ln[0] and ln[0].lot_id:
 					lot_no = prefix+ln[0].lot_id.name
