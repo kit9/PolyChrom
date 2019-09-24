@@ -243,10 +243,10 @@ class MrpworkorderInherit(models.Model):
 			_logger.info('*** Onchange Previous Product: %s', self.production_id.bom_id.prev_product_id)
 			prefix = self.product_id.prefix_serial_no
 			lot_name = self.current_quality_check_id.lot_id.name
-			lotExists = self.env['stock.production.lot'].search(['&', ('name', '=', prefix+lot_name), ('product_id', '=', self.product_id)], limit=1)
+			lotExists = self.env['stock.production.lot'].search(['&', ('name', '=', prefix+lot_name), ('product_id', '=', self.product_id.id)], limit=1)
 			if not lotExists:
 				_logger.info('*** Onchange Lot Not Exists, Create it: %s', lotExists)
-				lotExists = self.env['stock.production.lot'].create({'name': prefix+lot_name, 'product_id': self.product_id})
+				lotExists = self.env['stock.production.lot'].create({'name': prefix+lot_name, 'product_id': self.product_id.id})
 			self.final_lot_id = lotExists.id
 			_logger.info('*** Onchange Final Lot ID: %s', self.final_lot_id)
 	
