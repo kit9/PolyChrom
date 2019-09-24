@@ -22,7 +22,33 @@ class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
 	digits_serial_no = fields.Integer(string='Digits :')
-	prefix_serial_no = fields.Char(string="Prefix :")	
+	prefix_serial_no = fields.Char(string="Prefix :")
+
+class QualityCheckInherit(models.Model):
+	_inherit = "quality.check"
+
+	@api.model
+	def create(self, values):
+		record = super(QualityCheckInherit, self).create(values)
+		lot_id = record['lot_id']
+		component = record['component_id']
+		move_line = record['move_line_id']
+		if not lot_id and component and component.tracking != 'none':
+			wo = record['workorder_id']
+			# this will set the Serial Number
+			if component.tracking == 'serial':
+				move = wo.production_id.move_raw_ids.filtered(lambda move: move.product_id.id == wo.production_id.bom_id.prev_product_id.id)
+				if move_line and move_line.lot_id and move_line.product_id.id == wo.production_id.bom_id.prev_product_id.id:
+					record['lot_id'] = move_line.lot_id.id
+				elif move and move[0].active_move_line_ids:
+					serial_id = move[0].active_move_line_ids.filtered(lambda aml: not aml.lot_produced_id)
+					if serial_id:
+						record['lot_id'] = serial_id[0].lot_id.id
+			else:
+				lot_id = self.env['stock.production.lot'].search([('product_id', '=', component.id)], limit=1)
+				record['lot_id'] = lot_id.id
+		
+		return record
 			
 class MrpBom(models.Model):
 	_inherit = 'mrp.bom'
@@ -85,23 +111,36 @@ class MrpProductionInherit(models.Model):
 				
 			prev_prod = self.bom_id.prev_product_id.id
 			
-			material = self.move_raw_ids.search([('product_id', '=', prev_prod)])
+			material = self.move_raw_ids.filtered(lambda mat: mat.product_id.id == prev_prod )
 			for m in material:
-				for ln in m.active_move_line_ids:
-					if ln.lot_id:
-						lot_no = prefix+ln.lot_id.name
-						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
-						if not serialExists:
-							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-							break
+				ln = m.active_move_line_ids.filtered(lambda aml: aml.state == 'assigned' and not aml.lot_produced_id)
+				if ln and ln[0] and ln[0].lot_id:
+					lot_no = prefix+ln[0].lot_id.name
+					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+					if not serialExists:
+						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+						break
+					else:
+						lot_serial_no = serialExists[0]
+						break
+						
 		#The Original Way	
 		if not lot_serial_no:
-			if prefix != False:
-				lot_no = prefix+no+str(serial_no)
-			else:
-				lot_no = str(serial_no)
+			cnt = 0
+			serialExists = False
+			while not serialExists and cnt <=20:
+				if prefix != False:
+					lot_no = prefix+no+str(serial_no)
+				else:
+					lot_no = str(serial_no)
+				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+				if serialExists:
+					serial_no= serial_no + 1
+					cnt = cnt + 1
+				else:
+					break
 				
-			company.update({'serial_no' : serial_no})
+			company.write({'serial_no' : serial_no})
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})			
 		return lot_serial_no
 
@@ -111,13 +150,40 @@ class MrpProductionInherit(models.Model):
 		for lot in res:
 			lot.final_lot_id = lot_id.id
 			lot.lot_numbr = lot_id.id
+			move = self.move_raw_ids.filtered(lambda move: move.workorder_id.id == lot.id and (move.product_id.id == self.bom_id.prev_product_id.id or move.product_id.tracking == 'lot'))
+			qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)], limit=1)
 		return res
-
+	
+	
 class MrpworkorderInherit(models.Model):
 	""" Manufacturing Orders """
 	_inherit = 'mrp.workorder'
 
 	lot_numbr = fields.Char(string="lot number")
+	
+	@api.onchange('lot_id')
+	def _onchange_lot_id(self):
+		if self.production_id.bom_id.prev_product_id:
+			prefix = self.product_id.prefix_serial_no
+			lot_name = self.lot_id.name
+			lotExists = self.env['stock.production.lot'].search(['&', ('name', '=', prefix+lot_name), ('product_id', '=', self.product_id.id)], limit=1)
+			if not lotExists:
+				lotExists = self.env['stock.production.lot'].create({'name': prefix+lot_name, 'product_id': self.product_id.id})
+			self.final_lot_id = lotExists.id
+			
+	
+	#def _create_checks(self):
+	#	_logger.info('*** ### Create Override')
+		#res = super(MrpworkorderInherit, self)._create_checks()
+		#move = self.production_id.move_raw_ids.filtered(lambda move: move.product_id.id == self.production_id.bom_id.prev_product_id.id)
+		#
+		#if move and move[0].active_move_line_ids:
+		#	_logger.info('*** ### Set Lot Number with serial')
+		#	self.current_quality_check_id.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
+		#elif self.current_quality_check_id.component_id == 'lot':
+		#	_logger.info('*** ### Set Lot Number with Lot')
+		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
+		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
 
 	@api.multi
 	def record_production(self):
@@ -126,15 +192,18 @@ class MrpworkorderInherit(models.Model):
 		self.ensure_one()
 		if self.qty_producing <= 0:
 			raise UserError(_('Please set the quantity you are currently producing. It should be different from zero.'))
-
+		
 		if (self.production_id.product_id.tracking != 'none') and not self.final_lot_id and self.move_raw_ids:
 			raise UserError(_('You should provide a lot/serial number for the final product.'))
-
+		
+		qa = self.env['quality.check'].search(['&', ('quality_state', '=', 'none'), ('workorder_id', '=', self.id)])
+	
 		# Update quantities done on each raw material line
 		# For each untracked component without any 'temporary' move lines,
 		# (the new workorder tablet view allows registering consumed quantities for untracked components)
 		# we assume that only the theoretical quantity was used
 		for move in self.move_raw_ids:
+			_logger.info('*** Stock Move Line Ids: %s', move.active_move_line_ids)
 			if move.has_tracking == 'none' and (move.state not in ('done', 'cancel')) and move.bom_line_id\
 						and move.unit_factor and not move.move_line_ids.filtered(lambda ml: not ml.done_wo):
 				rounding = move.product_uom.rounding
@@ -206,7 +275,6 @@ class MrpworkorderInherit(models.Model):
 						for i in range(0, int(float_round(qty_todo, precision_digits=0))):
 							values = self._get_byproduct_move_line(by_product_move, 1)
 							self.env['stock.move.line'].create(values)
-
 		# Update workorder quantity produced
 		self.qty_produced += self.qty_producing
 		if self.final_lot_id:
@@ -215,7 +283,7 @@ class MrpworkorderInherit(models.Model):
 
 
 
-		# One a piece is produced, you can launch the next work order
+		# Once a piece is produced, you can launch the next work order
 		self._start_nextworkorder()
 
 
@@ -231,12 +299,15 @@ class MrpworkorderInherit(models.Model):
 		else:
 			self.qty_producing = float_round(self.production_id.product_qty - self.qty_produced, precision_rounding=rounding)
 			self._generate_lot_ids()
-
+			
+		new_lot_id = self.production_id.create_custom_lot_no()
+		self.lot_numbr = new_lot_id.id
 		self.final_lot_id = int(self.lot_numbr)
-
-
+		
 		if self.next_work_order_id and self.production_id.product_id.tracking != 'none':
 			self.next_work_order_id._assign_default_final_lot_id()
+			
+		
 
 		if float_compare(self.qty_produced, self.production_id.product_qty, precision_rounding=rounding) >= 0:
 			self.button_finish()
