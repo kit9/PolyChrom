@@ -237,6 +237,7 @@ class MrpworkorderInherit(models.Model):
 	
 	@api.onchange('lot_id')
 	def _onchange_lot_id(self):
+		_logger.info('*** Onchange Lot ID: %s', self.lot_id.name)
 		_logger.info('*** Onchange Lot ID: %s', self.current_quality_check_id.lot_id.name)
 		_logger.info('*** Onchange Final Lot ID: %s', self.final_lot_id.name)
 		if self.production_id.bom_id.prev_product_id:
