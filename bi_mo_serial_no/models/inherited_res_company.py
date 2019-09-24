@@ -247,8 +247,9 @@ class MrpworkorderInherit(models.Model):
 			if not lotExists:
 				_logger.info('*** Onchange Lot Not Exists, Create it: %s', lotExists)
 				lotExists = self.env['stock.production.lot'].create({'name': prefix+lot_name, 'product_id': self.product_id.id})
-			self.final_lot_id = lotExists.id
-			_logger.info('*** Onchange Final Lot ID: %s', self.final_lot_id)
+			_logger.info('*** Onchange Final Lot ID: (%s from %)', lotExists.id, self.final_lot_id)
+			self.write({'final_lot_id': lotExists.id})
+			
 	
 	def _create_checks(self):
 		_logger.info('*** ### Create Override')
