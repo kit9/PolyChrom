@@ -83,6 +83,7 @@ class MrpProductionInherit(models.Model):
 
 	def do_produce_more(self, produce):
 		close = produce.do_produce()
+		_logger.info("*** Closing using the following action: %s and %s", self.qty_produced, self.product_qty)
 		# next = self.open_produce_product()
 		if self.qty_produced >= self.product_qty:
 			_logger.info("Closing using the following action: %s", close)
