@@ -81,6 +81,11 @@ class MrpProductionInherit(models.Model):
 
 	# lot_numbr = fields.Char(string="lot number")
 
+	def do_produce_more(self, produce):
+		close = produce.do_produce()
+		next = self.open_produce_product()
+		return next
+	
 	def create_custom_lot_no(self):
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
 		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
@@ -185,10 +190,6 @@ class MrpworkorderInherit(models.Model):
 		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
 		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
 	
-	def do_produce_more(self, produce):
-		close = produce.do_produce()
-		next = self.open_produce_product()
-		return next
 		
 	@api.multi
 	def record_production(self):
