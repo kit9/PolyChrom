@@ -81,6 +81,22 @@ class MrpProductionInherit(models.Model):
 
 	# lot_numbr = fields.Char(string="lot number")
 
+	def do_produce_more(self, produce):
+		close = produce.do_produce()
+		_logger.info("*** Closing using the following action: %s and %s", self.qty_produced, self.product_qty)
+		# next = self.open_produce_product()
+		if self.qty_produced >= self.product_qty:
+			_logger.info("*** Closing using the following action: %s", close)
+			return close
+		_logger.info("*** Self Ensure One")
+		self.ensure_one()
+		do_nothing = {"type": "ir.actions.do_nothing"}
+		actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
+		_logger.info("*** XML View: %s", actionXml)
+		_logger.info("*** XML View at index 0: %s", actionXml[0])
+		_logger.info("*** Stay on the screen: %s", do_nothing)
+		return do_nothing
+	
 	def create_custom_lot_no(self):
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
 		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
@@ -184,7 +200,8 @@ class MrpworkorderInherit(models.Model):
 		#	_logger.info('*** ### Set Lot Number with Lot')
 		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
 		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
-
+	
+		
 	@api.multi
 	def record_production(self):
 		if not self:

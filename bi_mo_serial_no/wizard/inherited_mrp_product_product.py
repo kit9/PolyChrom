@@ -18,7 +18,9 @@ class MrpProductProduce(models.TransientModel):
 	lot_id = fields.Many2one('stock.production.lot', string='Lot',required=False)
 
 	
-
+	@api.multi
+	def do_produce_more(self):
+		return self.production_id.do_produce_more(self)
 
 	@api.multi
 	def do_produce(self):
