@@ -86,10 +86,14 @@ class MrpProductionInherit(models.Model):
 		_logger.info("*** Closing using the following action: %s and %s", self.qty_produced, self.product_qty)
 		# next = self.open_produce_product()
 		if self.qty_produced >= self.product_qty:
-			_logger.info("Closing using the following action: %s", close)
+			_logger.info("*** Closing using the following action: %s", close)
 			return close
-		_logger.info("Just return True")
-		return True
+		_logger.info("*** Self Ensure One")
+		self.ensure_one()
+		actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
+		_logger.info("*** XML View: %s", actionXml)
+		_logger.info("*** XML View at index 0: %s", actionXml[0])
+		#return True
 	
 	def create_custom_lot_no(self):
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
