@@ -20,8 +20,7 @@ class MrpProductProduce(models.TransientModel):
 	
 	@api.multi
 	def do_produce_more(self):
-		self.do_produce()
-		return self.production_id.open_produce_product()
+		return self.production_id.do_produce_more(self)
 
 	@api.multi
 	def do_produce(self):
