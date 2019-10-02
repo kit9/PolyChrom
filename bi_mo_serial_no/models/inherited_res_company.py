@@ -93,7 +93,7 @@ class MrpProductionInherit(models.Model):
 		actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
 		_logger.info("*** XML View: %s", actionXml)
 		_logger.info("*** XML View at index 0: %s", actionXml[0])
-		#return True
+		return actionXml[0]
 	
 	def create_custom_lot_no(self):
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
