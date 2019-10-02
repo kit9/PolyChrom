@@ -185,7 +185,7 @@ class MrpworkorderInherit(models.Model):
 		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
 		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
 	
-	def do_more_produce(self, produce):
+	def do_produce_more(self, produce):
 		close = produce.do_produce()
 		next = self.open_produce_product()
 		return next
