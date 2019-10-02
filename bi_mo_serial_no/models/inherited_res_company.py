@@ -85,7 +85,9 @@ class MrpProductionInherit(models.Model):
 		close = produce.do_produce()
 		# next = self.open_produce_product()
 		if self.qty_produced >= self.product_qty:
+			_logger.info("Closing using the following action: %s", close)
 			return close
+		_logger.info("Just return false")
 		return False
 	
 	def create_custom_lot_no(self):
