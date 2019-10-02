@@ -83,8 +83,8 @@ class MrpProductionInherit(models.Model):
 
 	def do_produce_more(self, produce):
 		close = produce.do_produce()
-		next = self.open_produce_product()
-		return next
+		# next = self.open_produce_product()
+		return close
 	
 	def create_custom_lot_no(self):
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
