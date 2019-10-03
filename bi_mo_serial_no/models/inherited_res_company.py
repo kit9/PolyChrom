@@ -94,7 +94,8 @@ class MrpProductionInherit(models.Model):
 		actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
 		_logger.info("*** XML View: %s", actionXml)
 		_logger.info("*** XML View at index 0: %s", actionXml[0])
-		actionXml[0]['context'] = {'lot_id': self.create_custom_lot_no()}
+		actionXml[0]['context'] = {'lot_id': self.create_custom_lot_no().id}
+		actionXml[0]['res_id'] = False
 		_logger.info("*** Stay on the screen: %s", do_nothing)
 		_logger.info("*** Updated Context value: %s", actionXml[0])
 		return actionXml[0]
