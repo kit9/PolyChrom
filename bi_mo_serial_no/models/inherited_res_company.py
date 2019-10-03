@@ -96,6 +96,7 @@ class MrpProductionInherit(models.Model):
 		_logger.info("*** XML View at index 0: %s", actionXml[0])
 		actionXml[0]['context'] = {'lot_id': self.create_custom_lot_no()}
 		_logger.info("*** Stay on the screen: %s", do_nothing)
+		_logger.info("*** Updated Context value: %s", actionXml[0])
 		return actionXml[0]
 	
 	def create_custom_lot_no(self):
