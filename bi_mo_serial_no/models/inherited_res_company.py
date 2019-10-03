@@ -98,7 +98,7 @@ class MrpProductionInherit(models.Model):
 		actionXml[0]['res_id'] = False
 		_logger.info("*** Stay on the screen: %s", do_nothing)
 		_logger.info("*** Updated Context value: %s", actionXml[0])
-		return actionXml[0]
+		return do_nothing
 	
 	def create_custom_lot_no(self):
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
