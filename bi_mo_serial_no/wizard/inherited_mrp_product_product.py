@@ -22,7 +22,7 @@ class MrpProductProduce(models.TransientModel):
 		res = super(MrpProductProduce, self).default_get(fields)
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
-			res['lot_id'] = production.create_custom_lot_no()
+			res['lot_id'] = production.create_custom_lot_no().id
 		return res
 	
 	@api.multi
