@@ -92,6 +92,9 @@ class MrpProductionInherit(models.Model):
 		self.ensure_one()
 		do_nothing = {"type": "ir.actions.do_nothing"}
 		actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
+		_logger.info("*** Product Produce Lot Id Pre: %s", produce.lot_id.id)
+		produce.lot_id = self.create_custom_lot_no().id
+		_logger.info("*** Product Produce Lot Id Post: %s", produce.lot_id.id)
 		_logger.info("*** XML View: %s", actionXml)
 		_logger.info("*** XML View at index 0: %s", actionXml[0])
 		actionXml[0]['context'] = {'lot_id': self.create_custom_lot_no().id}
