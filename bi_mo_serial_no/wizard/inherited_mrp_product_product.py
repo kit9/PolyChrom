@@ -17,6 +17,13 @@ class MrpProductProduce(models.TransientModel):
 
 	lot_id = fields.Many2one('stock.production.lot', string='Lot',required=False)
 
+	@api.model
+	def default_get(self, fields):
+		res = super(MrpProductProduce, self).default_get(fields)
+		if 'production_id' in res:
+			production = self.env['mrp.production'].browse(res['production_id'])
+			res['lot_id'] = production.create_custom_lot_no()
+		return res
 	
 	@api.multi
 	def do_produce_more(self):
