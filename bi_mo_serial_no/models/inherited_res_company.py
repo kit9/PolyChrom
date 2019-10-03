@@ -90,15 +90,12 @@ class MrpProductionInherit(models.Model):
 			return close
 		_logger.info("*** Self Ensure One")
 		self.ensure_one()
-		do_nothing = {"type": "ir.actions.do_nothing"}
+		do_nothing = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
-		_logger.info("*** Product Produce Lot Id Pre: %s", produce.lot_id.id)
-		produce.lot_id = self.create_custom_lot_no().id
-		_logger.info("*** Product Produce Lot Id Post: %s", produce.lot_id.id)
 		_logger.info("*** XML View: %s", actionXml)
 		_logger.info("*** XML View at index 0: %s", actionXml[0])
-		actionXml[0]['context'] = {'lot_id': self.create_custom_lot_no().id}
-		actionXml[0]['res_id'] = False
+		#actionXml[0]['context'] = {'lot_id': self.create_custom_lot_no().id}
+		#actionXml[0]['res_id'] = False
 		_logger.info("*** Stay on the screen: %s", do_nothing)
 		_logger.info("*** Updated Context value: %s", actionXml[0])
 		return do_nothing
