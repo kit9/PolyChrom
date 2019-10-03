@@ -20,6 +20,7 @@ class MrpProductProduce(models.TransientModel):
 	@api.model
 	def default_get(self, fields):
 		res = super(MrpProductProduce, self).default_get(fields)
+		_logger.info('*** Fields are: %s', fields)
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
 			res['lot_id'] = production.create_custom_lot_no().id
@@ -33,7 +34,6 @@ class MrpProductProduce(models.TransientModel):
 		       'res_id': self.id,
 		       'view_type': 'form',
 		       'view_mode': 'form',
-			'context': {'active_ids': [self.production_id.id]},
 		       'target': 'new'}
 	
 	@api.multi
