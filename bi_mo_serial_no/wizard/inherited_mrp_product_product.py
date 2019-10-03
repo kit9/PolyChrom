@@ -17,6 +17,24 @@ class MrpProductProduce(models.TransientModel):
 
 	lot_id = fields.Many2one('stock.production.lot', string='Lot',required=False)
 
+	@api.model
+	def default_get(self, fields):
+		res = super(MrpProductProduce, self).default_get(fields)
+		_logger.info('*** Fields are: %s', fields)
+		if 'production_id' in res:
+			production = self.env['mrp.production'].browse(res['production_id'])
+			res['lot_id'] = production.create_custom_lot_no().id
+		return res
+	
+	@api.multi
+	def _reopen_form(self):
+		self.ensure_one()
+		return {'type': 'ir.actions.act_window',
+		       'res_model': self._name,
+		       'res_id': self.id,
+		       'view_type': 'form',
+		       'view_mode': 'form',
+		       'target': 'new'}
 	
 	@api.multi
 	def do_produce_more(self):
@@ -47,21 +65,22 @@ class MrpProductProduce(models.TransientModel):
 		else :
 			no = ""
 		
+		
 		lot_serial_no = False
 		if self.production_id.bom_id and self.production_id.bom_id.prev_product_id:
 			if prefix == False:
 				prefix = 'F'
-				
+
 			prev_prod = self.production_id.bom_id.prev_product_id.id
-			
+
 			product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
-			
+
 			if product_line:
 				lot_no = prefix+product_line.lot_id.name
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
 				if not serialExists:
 					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-		
+
 		# This is the original way
 		if lot_serial_no == False:
 			if prefix != False:
@@ -71,6 +90,7 @@ class MrpProductProduce(models.TransientModel):
 			company.update({'serial_no' : serial_no})
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		self.lot_id = lot_serial_no
+			
 		# Nothing to do for lots since values are created using default data (stock.move.lots)
 		quantity = self.product_qty
 		if float_compare(quantity, 0, precision_rounding=self.product_uom_id.rounding) <= 0:
