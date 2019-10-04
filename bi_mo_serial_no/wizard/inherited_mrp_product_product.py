@@ -23,7 +23,7 @@ class MrpProductProduce(models.TransientModel):
 		_logger.info('*** Fields are: %s', fields)
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
-			if production and production.bom_id and production.prev_product_id:
+			if production and production.bom_id and production.bom_id.prev_product_id:
 				prefix = production.product_id.prefix_serial_no 
 				product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
 				if product_line:
