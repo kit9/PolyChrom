@@ -30,18 +30,16 @@ class MrpProductProduce(models.TransientModel):
 			_logger.info('*** Prod: %s', production.product_id)
 			_logger.info('*** tracking: %s', production.product_id.tracking)
 			_logger.info('*** Self Line Ids: %s', self.produce_line_ids)
-			move = production.move_raw_ids #.filtered(lambda x: x.product_id.id = prev_prod and x.product_id != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
-			_logger.info('*** Production Move Line Ids: %s', move)
 			if production and production.bom_id and production.bom_id.prev_product_id:
 				prefix = production.product_id.prefix_serial_no
 				prev_prod = production.bom_id.prev_product_id.id
-				#move = production.move_raw_ids.filtered(lambda x: x.product_id.id = prev_prod and x.product_id != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
-				product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
-				if product_line:
-				#if move:
-				#	move_line = move[0].move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
-				#	lot_no = prefix+move_line.lot_id.name
-					lot_no = prefix+product_line.lot_id.name
+				move = production.move_raw_ids.filtered(lambda x: x.product_id.id = prev_prod and x.product_id.tracking != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
+				#product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
+				#if product_line:
+				if move:
+					move_line = move[0].move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
+					lot_no = prefix+move_line.lot_id.name
+				#	lot_no = prefix+product_line.lot_id.name
 					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', production.product_id.id)])
 					if not serialExists:
 						_logger.info('*** Serial Not Exists: %s', serialExists)
