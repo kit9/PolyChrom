@@ -24,7 +24,8 @@ class MrpProductProduce(models.TransientModel):
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
 			if production and production.bom_id and production.bom_id.prev_product_id:
-				prefix = production.product_id.prefix_serial_no 
+				prefix = production.product_id.prefix_serial_no
+				prev_prod = production.bom_id.prev_product_id.id
 				product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
 				if product_line:
 					lot_no = prefix+product_line.lot_id.name
