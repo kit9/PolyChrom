@@ -123,7 +123,7 @@ class MrpProductionInherit(models.Model):
 
 			#product_line = produce.produce_line_ids.filtered(lambda x: x.product_id == prev_prod)[0]
 			#.search(['&', ('product_produce_id', '=', produce.id), ('product_id', '=', prev_prod)], limit=1)
-			move = self.move_raw_ids.filtered(lambda x: x.product_id.id == prev_product)[0]
+			move = self.move_raw_ids.filtered(lambda x: x.product_id.id == prev_prod)[0]
 			move_line = move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)
 
 			if product_line:
