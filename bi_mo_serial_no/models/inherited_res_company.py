@@ -155,20 +155,27 @@ class MrpProductionInherit(models.Model):
 			todo_quantity = produce.product_qty - sum(produce.main_product_moves.mapped('quantity_done'))
 			todo_quantity = todo_quantity if (todo_quantity > 0) else 0
 		
+		lines = []
 		for line in produce.produce_line_ids:
 			raw_move = self.move_raw_ids.filtered(lambda x: x.id == line.move_id.id)
 			qty_to_consume = float_round(todo_quantity / raw_move.bom_line_id.bom_id.product_qty * raw_move.bom_line_id.product_qty, precision_rounding=raw_move.product_uom.rounding, rounding_method="UP")
-			
+			item = {
+				'move_id': line.move_id,
+				'qty_done': 0.0,
+				'product_uom_id' : line.product_uom_id,
+				'product_id': line.product_id
+			}
 			if line.lot_id:
 				move_line = raw_move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
-				line.lot_id = move_line.lot_id.id
+				item['lot_id'] = move_line.lot_id.id
 			else:
 				move_line = raw_move.active_move_line_ids[0]
 				
 			to_consume_in_line = min(qty_to_consume, move_line.product_uom_qty)
-			line.qty_to_consume = to_consume_in_line
-			line.qty_done = 0.0
-			line.id = 0
+			item['qty_to_consume'] = to_consume_in_line
+			lines.append(item)
+			
+		produce.produce_line_ids = [(0,0,x) for x in lines]
 		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
