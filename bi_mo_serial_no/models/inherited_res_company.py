@@ -148,7 +148,7 @@ class MrpProductionInherit(models.Model):
 		_logger.info("*** Produce Line Ids: %s",  produce.produce_line_ids)
 		
 		for line in produce.produce_line_ids:
-			raw_move = self.move_raw_ids.filtered(lambda x: x.id = line.move_id.id)
+			raw_move = self.move_raw_ids.filtered(lambda x: x.id == line.move_id.id)
 			qty_to_consume = float_round(todo_quantity / raw_move.bom_line_id.bom_id.product_qty * raw_move.bom_line_id.product_qty,
                                                  precision_rounding=raw_move.product_uom.rounding, rounding_method="UP")
 			if line.lot_id:
