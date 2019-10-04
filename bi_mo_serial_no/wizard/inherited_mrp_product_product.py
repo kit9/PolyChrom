@@ -30,7 +30,7 @@ class MrpProductProduce(models.TransientModel):
 			_logger.info('*** Prod: %s', production.product_id)
 			_logger.info('*** tracking: %s', production.product_id.tracking)
 			_logger.info('*** Self Line Ids: %s', self.produce_line_ids)
-			_logger.info('*** Res Line Ids: %s', res['produce_line_ids'])
+			_logger.info('*** fields Line Ids: %s', fields['produce_line_ids'])
 			if production and production.bom_id and production.bom_id.prev_product_id:
 				prefix = production.product_id.prefix_serial_no
 				prev_prod = production.bom_id.prev_product_id.id
