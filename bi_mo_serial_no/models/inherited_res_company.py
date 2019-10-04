@@ -128,6 +128,8 @@ class MrpProductionInherit(models.Model):
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', produce.product_id.id)])
 				if not serialExists:
 					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no, 'product_id':produce.product_id.id})
+				else:
+					lot_serial_no = serialExists[0]
 
 		# This is the original way
 		if lot_serial_no == False:
