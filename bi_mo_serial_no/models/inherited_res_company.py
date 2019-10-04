@@ -126,7 +126,7 @@ class MrpProductionInherit(models.Model):
 			move = self.move_raw_ids.filtered(lambda x: x.product_id.id == prev_prod)[0]
 			move_line = move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)
 
-			if product_line:
+			if move_line:
 				#lot_no = prefix+product_line.lot_id.name
 				lot_no = prefix+move_line.lot_id.name
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', produce.product_id.id)])
