@@ -147,12 +147,12 @@ class MrpProductionInherit(models.Model):
 		_logger.info("*** New Line Lot Id: %s as Name %s", produce.lot_id, produce.lot_id.name)
 		_logger.info("*** Produce Line Ids: %s",  produce.produce_line_ids)
 		
-		serial_finished = (production.product_id.tracking == 'serial')
+		serial_finished = (self.product_id.tracking == 'serial')
 		if serial_finished:
 			todo_quantity = 1.0
 		else:
-			main_product_moves = production.move_finished_ids.filtered(lambda x: x.product_id.id == production.product_id.id)
-			todo_quantity = production.product_qty - sum(main_product_moves.mapped('quantity_done'))
+			main_product_moves = self.move_finished_ids.filtered(lambda x: x.product_id.id == self.product_id.id)
+			todo_quantity = produce.product_qty - sum(produce.main_product_moves.mapped('quantity_done'))
 			todo_quantity = todo_quantity if (todo_quantity > 0) else 0
 		
 		for line in produce.produce_line_ids:
