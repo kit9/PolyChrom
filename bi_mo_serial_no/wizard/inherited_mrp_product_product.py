@@ -19,6 +19,13 @@ class MrpProductProduce(models.TransientModel):
 
 	@api.model
 	def default_get(self, fields):
+		if 'serial' not in fields:
+			fields.append('serial')
+		if 'product_tracking' not in fields:
+			fields.append('product_tracking')
+		if 'produce_line_ids' not in fields:
+			fields.append('produce_line_ids')
+		
 		res = super(MrpProductProduce, self).default_get(fields)
 		_logger.info('*** Fields are: %s', fields)
 		if 'production_id' in res:
