@@ -48,13 +48,14 @@ class MrpProductProduce(models.TransientModel):
 				if move:
 					move_line = move[0].move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
 					lot_no = prefix+move_line.lot_id.name
+					_logger.info('*** Looking for serial: %s', lot_no)
 				#	lot_no = prefix+product_line.lot_id.name
 					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', production.product_id.id)])
 					if not serialExists:
 						_logger.info('*** Serial Not Exists: %s', serialExists)
 						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':production.product_id.id})
 					else:
-						_logger.info('*** Serial Does Exist: %s', serialExists)
+						_logger.info('*** Serial Does Exist: %s as name: %s', serialExists, serialExists[0].name)
 						lot_serial_no = serialExists[0]
 			elif production.product_id.tracking != 'none':
 				_logger.info('*** Here is your tracking: %s', production.product_id.tracking)
