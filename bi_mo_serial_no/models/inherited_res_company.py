@@ -145,6 +145,7 @@ class MrpProductionInherit(models.Model):
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		produce.lot_id = lot_serial_no
 		_logger.info("*** New Line Lot Id: %s as Name %s", produce.lot_id, produce.lot_id.name)
+		_logger.info("*** Produce Line Ids: %s",  produce.produce_line_ids)
 		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
