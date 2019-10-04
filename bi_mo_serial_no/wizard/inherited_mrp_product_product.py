@@ -27,6 +27,8 @@ class MrpProductProduce(models.TransientModel):
 			fields.append('product_tracking')
 		if 'produce_line_ids' not in fields:
 			fields.append('produce_line_ids')
+			
+		_logger.info('*** Self Context: %s', self._context)
 		
 		res = super(MrpProductProduce, self).default_get(fields)
 		_logger.info('*** Fields are: %s', fields)
