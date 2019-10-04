@@ -23,6 +23,7 @@ class MrpProductProduce(models.TransientModel):
 		_logger.info('*** Fields are: %s', fields)
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
+			lot_serial_no = False
 			if production and production.bom_id and production.bom_id.prev_product_id:
 				prefix = production.product_id.prefix_serial_no
 				prev_prod = production.bom_id.prev_product_id.id
