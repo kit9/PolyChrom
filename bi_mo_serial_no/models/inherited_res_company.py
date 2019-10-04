@@ -146,6 +146,8 @@ class MrpProductionInherit(models.Model):
 		produce.lot_id = lot_serial_no
 		_logger.info("*** New Line Lot Id: %s as Name %s", produce.lot_id, produce.lot_id.name)
 		_logger.info("*** Produce Line Ids: %s",  produce.produce_line_ids)
+		res = produce.default_get(['produce_line_ids'])
+		_logger.info("*** Produce Line Ids from default: %s",  res)
 		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
