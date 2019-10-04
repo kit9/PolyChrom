@@ -168,6 +168,7 @@ class MrpProductionInherit(models.Model):
 			to_consume_in_line = min(qty_to_consume, move_line.product_uom_qty)
 			line.qty_to_consume = to_consume_in_line
 			line.qty_done = 0.0
+			line.id = 0
 		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
