@@ -21,6 +21,8 @@ class MrpProductProduce(models.TransientModel):
 	def default_get(self, fields):
 		if 'serial' not in fields:
 			fields.append('serial')
+		if 'production_id' not in fields:
+			fields.append('production_id')
 		if 'product_tracking' not in fields:
 			fields.append('product_tracking')
 		if 'produce_line_ids' not in fields:
