@@ -90,6 +90,54 @@ class MrpProductionInherit(models.Model):
 			return close
 		_logger.info("*** Self Ensure One")
 		self.ensure_one()
+		
+		company = self.env['res.company']._company_default_get('mrp.product.produce')
+		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
+
+		if result.apply_method == "global":
+			digit = result.digits_serial_no
+			prefix = result.prefix_serial_no
+		else:
+			digit = self.product_id.digits_serial_no
+			prefix = self.product_id.prefix_serial_no
+			
+		serial_no = company.serial_no + 1
+		serial_no_digit=len(str(company.serial_no))
+
+		
+		diffrence = abs(serial_no_digit - digit)
+		if diffrence > 0:
+			no = "0"
+			for i in range(diffrence-1) :
+				no = no + "0"
+		else :
+			no = ""
+		
+		lot_serial_no = False
+		if self.bom_id and self.bom_id.prev_product_id:
+			if prefix == False:
+				prefix = 'F'
+
+			prev_prod = self.bom_id.prev_product_id.id
+
+			product_line = produce.produce_line_ids.search(['&', ('product_produce_id', '=', produce.id), ('product_id', '=', prev_prod)], limit=1)
+
+			if product_line:
+				lot_no = prefix+product_line.lot_id.name
+				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', produce.product_id.id)])
+				if not serialExists:
+					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no, 'product_id':produce.product_id.id})
+
+		# This is the original way
+		if lot_serial_no == False:
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
+			company.update({'serial_no' : serial_no})
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+		produce.lot_id = lot_serial_no
+		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
 		return reopen_form
