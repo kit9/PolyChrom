@@ -30,7 +30,7 @@ class MrpProductProduce(models.TransientModel):
 			_logger.info('*** Prod: %s', production.product_id)
 			_logger.info('*** tracking: %s', production.product_id.tracking)
 			_logger.info('*** Self Line Ids: %s', self.produce_line_ids)
-			move = production.move_raw_ids.filtered(lambda x: x.product_id.id = prev_prod and x.product_id != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
+			move = production.move_raw_ids #.filtered(lambda x: x.product_id.id = prev_prod and x.product_id != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
 			_logger.info('*** Production Move Line Ids: %s', move)
 			if production and production.bom_id and production.bom_id.prev_product_id:
 				prefix = production.product_id.prefix_serial_no
