@@ -75,6 +75,7 @@ class MrpProductProduce(models.TransientModel):
 		       'res_id': self.id,
 		       'view_type': 'form',
 		       'view_mode': 'form',
+			'context': {'move_line_next': 1},
 		       'target': 'new'}
 	
 	@api.multi
