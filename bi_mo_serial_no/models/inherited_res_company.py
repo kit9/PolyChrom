@@ -121,10 +121,14 @@ class MrpProductionInherit(models.Model):
 
 			prev_prod = self.bom_id.prev_product_id.id
 
-			product_line = produce.produce_line_ids.search(['&', ('product_produce_id', '=', produce.id), ('product_id', '=', prev_prod)], limit=1)
+			#product_line = produce.produce_line_ids.filtered(lambda x: x.product_id == prev_prod)[0]
+			#.search(['&', ('product_produce_id', '=', produce.id), ('product_id', '=', prev_prod)], limit=1)
+			move = self.move_raw_ids.filtered(lambda x: x.product_id.id == prev_product)[0]
+			move_line = move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)
 
 			if product_line:
-				lot_no = prefix+product_line.lot_id.name
+				#lot_no = prefix+product_line.lot_id.name
+				lot_no = prefix+move_line.lot_id.name
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', produce.product_id.id)])
 				if not serialExists:
 					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no, 'product_id':produce.product_id.id})
