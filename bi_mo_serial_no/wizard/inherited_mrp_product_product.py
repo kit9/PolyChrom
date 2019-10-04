@@ -23,8 +23,26 @@ class MrpProductProduce(models.TransientModel):
 		_logger.info('*** Fields are: %s', fields)
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
-			res['lot_id'] = production.create_custom_lot_no().id
-		_logger.info('*** Fields are: %s', res)
+			if production and production.bom_id and production.prev_product_id:
+				prefix = production.product_id.prefix_serial_no 
+				product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
+				if product_line:
+					lot_no = prefix+product_line.lot_id.name
+					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
+					if not serialExists:
+						_logger.info('*** Serial Not Exists: %s', serialExists)
+						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+					else:
+						_logger.info('*** Serial Does Exist: %s', serialExists)
+						lot_serial_no = serialExists[0]
+			elif production.product_id.tracking != 'none':
+				_logger.info('*** Here is your tracking: %s', production.product_id.tracking)
+				lot_serial_no = production.create_custom_lot_no()
+			if lot_serial_no:
+				_logger.info('*** Set the lot_id: %s', lot_serial_no)
+				res['lot_id'] = lot_serial_no.id
+				#production.create_custom_lot_no().id
+		_logger.info('*** Res Fields are: %s', res)
 		return res
 	
 	@api.multi
