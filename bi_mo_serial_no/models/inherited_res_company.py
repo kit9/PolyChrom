@@ -175,8 +175,8 @@ class MrpProductionInherit(models.Model):
 			item['qty_to_consume'] = to_consume_in_line
 			lines.append(item)
 			
-		produce.produce_line_ids = []
-		produce['produce_line_ids'] = []
+		produce.produce_line_ids = (6, 0, [])
+		produce['produce_line_ids'] = (6, 0, [])
 		produce['produce_line_ids'] = [(0,0,x) for x in lines]
 		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
