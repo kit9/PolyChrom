@@ -72,14 +72,13 @@ class MrpProductProduce(models.TransientModel):
 	@api.multi
 	def _reopen_form(self):
 		self.ensure_one()
-		return {'type': 'ir.actions.client',
-			'tag': 'reload',
+		return {'type': 'ir.actions.act_window',
 		       'res_model': self._name,
 		       'res_id': self.id,
 		       'view_type': 'form',
 		       'view_mode': 'form',
 			'context': {'move_line_next': 1},
-		       'target': 'new'}
+		       'target': 'current'}
 	
 	@api.multi
 	def do_produce_more(self):
