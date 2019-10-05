@@ -160,7 +160,7 @@ class MrpProductionInherit(models.Model):
 			raw_move = self.move_raw_ids.filtered(lambda x: x.id == line.move_id.id)
 			qty_to_consume = float_round(todo_quantity / raw_move.bom_line_id.bom_id.product_qty * raw_move.bom_line_id.product_qty, precision_rounding=raw_move.product_uom.rounding, rounding_method="UP")
 			item = {
-				'move_id': line.move_id,
+				#'move_id': line.move_id,
 				'qty_done': 0.0,
 				'product_uom_id' : line.product_uom_id,
 				'product_id': line.product_id
