@@ -115,6 +115,7 @@ class MrpProductProduce(models.TransientModel):
 			raise UserError(_("The production order for '%s' has no quantity specified") % self.product_id.display_name)
 		for move in self.production_id.move_raw_ids:
 			# TODO currently not possible to guess if the user updated quantity by hand or automatically by the produce wizard.
+			_logger.info('*** Important If Values: (%s, %s, %s)', move.product_id.tracking, move.state, move.unit_factor)
 			if move.product_id.tracking == 'none' and move.state not in ('done', 'cancel') and move.unit_factor:
 				rounding = move.product_uom.rounding
 				if self.product_id.tracking != 'none':
