@@ -177,7 +177,7 @@ class MrpProductionInherit(models.Model):
 			
 		#produce.produce_line_ids = (6, 0, [])
 		#produce['produce_line_ids'] = (6, 0, [])
-		produce['produce_line_ids'] = [(6,0,x) for x in lines]
+		produce['produce_line_ids'] = [(6,_,x) for x in lines]
 		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
