@@ -161,10 +161,11 @@ class MrpProductionInherit(models.Model):
 			_logger.info("*** Raw Move: %s -- Line Move: %s -- raw_ids: %s",  raw_move, line.move_id, self.move_raw_ids)
 			qty_to_consume = float_round(todo_quantity / raw_move[0].bom_line_id.bom_id.product_qty * raw_move[0].bom_line_id.product_qty, precision_rounding=raw_move[0].product_uom.rounding, rounding_method="UP")
 			item = {
-				#'move_id': line.move_id,
-				'qty_done': 0.0,
+				'move_id': line.move_id,
+				'qty_done': qty_to_consume,
 				'product_uom_id' : line.product_uom_id,
-				'product_id': line.product_id
+				'product_id': line.product_id.id,
+				'qty_reserved': line.qty_reserved
 			}
 			if line.lot_id:
 				move_line = raw_move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
