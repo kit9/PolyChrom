@@ -90,6 +90,90 @@ class MrpProductionInherit(models.Model):
 			return close
 		_logger.info("*** Self Ensure One")
 		self.ensure_one()
+		
+		company = self.env['res.company']._company_default_get('mrp.product.produce')
+		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
+
+		if result.apply_method == "global":
+			digit = result.digits_serial_no
+			prefix = result.prefix_serial_no
+		else:
+			digit = self.product_id.digits_serial_no
+			prefix = self.product_id.prefix_serial_no
+			
+		serial_no = company.serial_no + 1
+		serial_no_digit=len(str(company.serial_no))
+
+		
+		diffrence = abs(serial_no_digit - digit)
+		if diffrence > 0:
+			no = "0"
+			for i in range(diffrence-1) :
+				no = no + "0"
+		else :
+			no = ""
+		
+		lot_serial_no = False
+		if self.bom_id and self.bom_id.prev_product_id:
+			if prefix == False:
+				prefix = 'F'
+
+			prev_prod = self.bom_id.prev_product_id.id
+
+			move = self.move_raw_ids.filtered(lambda x: x.product_id.id == prev_prod)[0]
+			move_line = move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)
+
+			if move_line:
+				lot_no = prefix+move_line[0].lot_id.name
+				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', produce.product_id.id)])
+				if not serialExists:
+					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no, 'product_id':produce.product_id.id})
+				else:
+					lot_serial_no = serialExists[0]
+
+		# This is the original way
+		if lot_serial_no == False:
+			if prefix != False:
+				lot_no = prefix+no+str(serial_no)
+			else:
+				lot_no = str(serial_no)
+			company.update({'serial_no' : serial_no})
+			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
+		produce.lot_id = lot_serial_no
+		
+		serial_finished = (self.product_id.tracking == 'serial')
+		if serial_finished:
+			todo_quantity = 1.0
+		else:
+			main_product_moves = self.move_finished_ids.filtered(lambda x: x.product_id.id == self.product_id.id)
+			todo_quantity = produce.product_qty - sum(produce.main_product_moves.mapped('quantity_done'))
+			todo_quantity = todo_quantity if (todo_quantity > 0) else 0
+		
+		lines = []
+		for line in produce.produce_line_ids:
+			raw_move = self.move_raw_ids.filtered(lambda x: (line.move_id and x.id == line.move_id.id) or (not line.move_id and x.product_id.id == line.product_id.id))
+			qty_to_consume = float_round(todo_quantity / raw_move[0].bom_line_id.bom_id.product_qty * raw_move[0].bom_line_id.product_qty, precision_rounding=raw_move[0].product_uom.rounding, rounding_method="UP")
+			item = {
+				'move_id': line.move_id,
+				'qty_done': qty_to_consume,
+				'product_uom_id' : line.product_uom_id,
+				'product_id': line.product_id.id,
+				'qty_reserved': line.qty_reserved
+			}
+			if line.lot_id:
+				move_line = raw_move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
+				item['lot_id'] = move_line.lot_id.id
+			else:
+				move_line = raw_move.active_move_line_ids[0]
+				
+			to_consume_in_line = min(qty_to_consume, move_line.product_uom_qty)
+			item['qty_to_consume'] = to_consume_in_line
+			lines.append(item)
+			
+		produce.produce_line_ids = [(6, 0, [])]
+		produce['produce_line_ids'] = [(5,)]
+		produce['produce_line_ids'] = [(0,0,x) for x in lines]
+		
 		reopen_form = produce._reopen_form() #{"type": "ir.actions.do_nothing"}
 		#actionXml = self.env.ref('mrp.act_mrp_product_produce').read()
 		return reopen_form
@@ -183,22 +267,7 @@ class MrpworkorderInherit(models.Model):
 			if not lotExists:
 				lotExists = self.env['stock.production.lot'].create({'name': prefix+lot_name, 'product_id': self.product_id.id})
 			self.final_lot_id = lotExists.id
-			
 	
-	#def _create_checks(self):
-	#	_logger.info('*** ### Create Override')
-		#res = super(MrpworkorderInherit, self)._create_checks()
-		#move = self.production_id.move_raw_ids.filtered(lambda move: move.product_id.id == self.production_id.bom_id.prev_product_id.id)
-		#
-		#if move and move[0].active_move_line_ids:
-		#	_logger.info('*** ### Set Lot Number with serial')
-		#	self.current_quality_check_id.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
-		#elif self.current_quality_check_id.component_id == 'lot':
-		#	_logger.info('*** ### Set Lot Number with Lot')
-		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
-		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
-	
-		
 	@api.multi
 	def record_production(self):
 		if not self:

@@ -7,7 +7,7 @@
 
 		<field name="arch" type="xml">
 		<xpath expr="//field[@name='lot_id']" position="attributes">
-                    <attribute name="attrs">{'required': False,'invisible' : True}</attribute>
+                    <attribute name="attrs">{'required': False}</attribute>
                 </xpath>
 		 <xpath expr="//button[@name='do_produce']" position="after">
 			<button name="do_produce_more" type="object" string="Produce Next" class="btn-primary"/>

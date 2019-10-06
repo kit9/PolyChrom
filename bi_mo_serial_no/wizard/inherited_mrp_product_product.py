@@ -19,11 +19,38 @@ class MrpProductProduce(models.TransientModel):
 
 	@api.model
 	def default_get(self, fields):
+		if 'serial' not in fields:
+			fields.append('serial')
+		if 'production_id' not in fields:
+			fields.append('production_id')
+		if 'product_tracking' not in fields:
+			fields.append('product_tracking')
+		if 'produce_line_ids' not in fields:
+			fields.append('produce_line_ids')
+			
+		
 		res = super(MrpProductProduce, self).default_get(fields)
-		_logger.info('*** Fields are: %s', fields)
 		if 'production_id' in res:
 			production = self.env['mrp.production'].browse(res['production_id'])
-			res['lot_id'] = production.create_custom_lot_no().id
+			lot_serial_no = False
+			if production and production.bom_id and production.bom_id.prev_product_id:
+				prefix = production.product_id.prefix_serial_no
+				prev_prod = production.bom_id.prev_product_id.id
+				move = production.move_raw_ids.filtered(lambda x: x.product_id.id == prev_prod and x.product_id.tracking != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
+				
+				if move:
+					move_line = move[0].move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
+					lot_no = prefix+move_line.lot_id.name
+					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', production.product_id.id)])
+					if not serialExists:
+						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':production.product_id.id})
+					else:
+						lot_serial_no = serialExists[0]
+			elif production.product_id.tracking != 'none':
+				lot_serial_no = production.create_custom_lot_no()
+			if lot_serial_no:
+				res['lot_id'] = lot_serial_no.id
+		
 		return res
 	
 	@api.multi
@@ -34,6 +61,7 @@ class MrpProductProduce(models.TransientModel):
 		       'res_id': self.id,
 		       'view_type': 'form',
 		       'view_mode': 'form',
+			'context': {'move_line_next': 1},
 		       'target': 'new'}
 	
 	@api.multi
@@ -42,7 +70,6 @@ class MrpProductProduce(models.TransientModel):
 
 	@api.multi
 	def do_produce(self):
-
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
 		result = self.env['res.config.settings'].search([],order="id desc", limit=1)
 
@@ -56,7 +83,6 @@ class MrpProductProduce(models.TransientModel):
 		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
-		
 		diffrence = abs(serial_no_digit - digit)
 		if diffrence > 0:
 			no = "0"
@@ -64,32 +90,6 @@ class MrpProductProduce(models.TransientModel):
 				no = no + "0"
 		else :
 			no = ""
-		
-		
-		lot_serial_no = False
-		if self.production_id.bom_id and self.production_id.bom_id.prev_product_id:
-			if prefix == False:
-				prefix = 'F'
-
-			prev_prod = self.production_id.bom_id.prev_product_id.id
-
-			product_line = self.produce_line_ids.search(['&', ('product_produce_id', '=', self.id), ('product_id', '=', prev_prod)], limit=1)
-
-			if product_line:
-				lot_no = prefix+product_line.lot_id.name
-				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', self.product_id.id)])
-				if not serialExists:
-					lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-
-		# This is the original way
-		if lot_serial_no == False:
-			if prefix != False:
-				lot_no = prefix+no+str(serial_no)
-			else:
-				lot_no = str(serial_no)
-			company.update({'serial_no' : serial_no})
-			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
-		self.lot_id = lot_serial_no
 			
 		# Nothing to do for lots since values are created using default data (stock.move.lots)
 		quantity = self.product_qty
