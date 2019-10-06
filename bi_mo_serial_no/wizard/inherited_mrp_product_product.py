@@ -39,13 +39,14 @@ class MrpProductProduce(models.TransientModel):
 				move = production.move_raw_ids.filtered(lambda x: x.product_id.id == prev_prod and x.product_id.tracking != 'none' and x.state not in ('done', 'cancel') and x.bom_line_id)
 				
 				if move:
-					move_line = move[0].move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
-					lot_no = prefix+move_line.lot_id.name
-					serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', production.product_id.id)])
-					if not serialExists:
-						lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':production.product_id.id})
-					else:
-						lot_serial_no = serialExists[0]
+					move_line = move[0].move_line_ids.filtered(lambda x: not x.lot_produced_id)
+					if move_line:
+						lot_no = prefix+move_line[0].lot_id.name
+						serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', production.product_id.id)])
+						if not serialExists:
+							lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':production.product_id.id})
+						else:
+							lot_serial_no = serialExists[0]
 			elif production.product_id.tracking != 'none':
 				lot_serial_no = production.create_custom_lot_no()
 			if lot_serial_no:
