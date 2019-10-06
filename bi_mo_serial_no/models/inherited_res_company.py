@@ -113,7 +113,6 @@ class MrpProductionInherit(models.Model):
 		else :
 			no = ""
 		
-		_logger.info("*** Line Lot Id: %s as Name %s", produce.lot_id, produce.lot_id.name)
 		lot_serial_no = False
 		if self.bom_id and self.bom_id.prev_product_id:
 			if prefix == False:
@@ -121,13 +120,10 @@ class MrpProductionInherit(models.Model):
 
 			prev_prod = self.bom_id.prev_product_id.id
 
-			#product_line = produce.produce_line_ids.filtered(lambda x: x.product_id == prev_prod)[0]
-			#.search(['&', ('product_produce_id', '=', produce.id), ('product_id', '=', prev_prod)], limit=1)
 			move = self.move_raw_ids.filtered(lambda x: x.product_id.id == prev_prod)[0]
 			move_line = move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)
 
 			if move_line:
-				#lot_no = prefix+product_line.lot_id.name
 				lot_no = prefix+move_line[0].lot_id.name
 				serialExists = self.env['stock.production.lot'].search(['&', ('name', '=', lot_no), ('product_id', '=', produce.product_id.id)])
 				if not serialExists:
@@ -144,8 +140,6 @@ class MrpProductionInherit(models.Model):
 			company.update({'serial_no' : serial_no})
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		produce.lot_id = lot_serial_no
-		_logger.info("*** New Line Lot Id: %s as Name %s", produce.lot_id, produce.lot_id.name)
-		_logger.info("*** Produce Line Ids: %s",  produce.produce_line_ids)
 		
 		serial_finished = (self.product_id.tracking == 'serial')
 		if serial_finished:
@@ -158,7 +152,6 @@ class MrpProductionInherit(models.Model):
 		lines = []
 		for line in produce.produce_line_ids:
 			raw_move = self.move_raw_ids.filtered(lambda x: (line.move_id and x.id == line.move_id.id) or (not line.move_id and x.product_id.id == line.product_id.id))
-			_logger.info("*** Raw Move: %s -- Line Move: %s -- raw_ids: %s",  raw_move, line.move_id, self.move_raw_ids)
 			qty_to_consume = float_round(todo_quantity / raw_move[0].bom_line_id.bom_id.product_qty * raw_move[0].bom_line_id.product_qty, precision_rounding=raw_move[0].product_uom.rounding, rounding_method="UP")
 			item = {
 				'move_id': line.move_id,
@@ -274,22 +267,7 @@ class MrpworkorderInherit(models.Model):
 			if not lotExists:
 				lotExists = self.env['stock.production.lot'].create({'name': prefix+lot_name, 'product_id': self.product_id.id})
 			self.final_lot_id = lotExists.id
-			
 	
-	#def _create_checks(self):
-	#	_logger.info('*** ### Create Override')
-		#res = super(MrpworkorderInherit, self)._create_checks()
-		#move = self.production_id.move_raw_ids.filtered(lambda move: move.product_id.id == self.production_id.bom_id.prev_product_id.id)
-		#
-		#if move and move[0].active_move_line_ids:
-		#	_logger.info('*** ### Set Lot Number with serial')
-		#	self.current_quality_check_id.write({'lot_id': move[0].active_move_line_ids[0].lot_id.id})
-		#elif self.current_quality_check_id.component_id == 'lot':
-		#	_logger.info('*** ### Set Lot Number with Lot')
-		#	lot_id = self.env['stock.production.lot'].search([('product_id', '=', self.current_quality_check_id.component_id.id)], limit=1)
-		#	self.current_quality_check_id.write({'lot_id': lot_id.id})
-	
-		
 	@api.multi
 	def record_production(self):
 		if not self:
