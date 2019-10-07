@@ -167,7 +167,11 @@ class MrpProductionInherit(models.Model):
 			else:
 				move_line = raw_move.active_move_line_ids[0]
 				
-			to_consume_in_line = min(qty_to_consume, move_line.product_uom_qty)
+			if move_line:
+				uom_qty = move_line[0].product_uom_qty
+			else:
+				uom_qty = 0
+			to_consume_in_line = min(qty_to_consume, uom_qty)
 			item['qty_to_consume'] = to_consume_in_line
 			lines.append(item)
 			
