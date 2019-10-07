@@ -161,8 +161,9 @@ class MrpProductionInherit(models.Model):
 				'qty_reserved': line.qty_reserved
 			}
 			if line.lot_id:
-				move_line = raw_move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)[0]
-				item['lot_id'] = move_line.lot_id.id
+				move_line = raw_move.active_move_line_ids.filtered(lambda x: not x.lot_produced_id)
+				if move_line:
+					item['lot_id'] = move_line[0].lot_id.id
 			else:
 				move_line = raw_move.active_move_line_ids[0]
 				
