@@ -48,7 +48,7 @@ class MrpProductProduce(models.TransientModel):
 						else:
 							lot_serial_no = serialExists[0]
 			elif production.product_id.tracking != 'none':
-				used_moves = self.env['stock.move.line'].search([('product_id', '=', production.product_id)])
+				used_moves = self.env['stock.move.line'].search([('product_id', '=', production.product_id.id)])
 				used_lots = [x.lot_id.id for x in used_moves]
 				_logger.info('^^^ Default Get, list of used lots: %s', used_lots)
 				unused_lots = self.env['stock.production.lot'].search([('id', 'not in', used_lots)])
