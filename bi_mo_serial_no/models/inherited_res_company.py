@@ -23,6 +23,12 @@ class ProductProductInherit(models.Model):
 
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
+	
+	
+class ProductProductInherit(models.Model):
+	_inherit = "product.product"
+
+	description_deliveryout = fields.Text(string='Description for Delivery')
 
 class QualityCheckInherit(models.Model):
 	_inherit = "quality.check"
