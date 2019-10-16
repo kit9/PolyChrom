@@ -120,7 +120,7 @@ class MrpProductionInherit(models.Model):
 			no = ""
 		
 		_logger.info('^^^ Do Produce, current Lot: %s', produce.lot_id)
-		lot_serial_no = produce.lot_id
+		lot_serial_no = False
 		if self.bom_id and self.bom_id.prev_product_id:
 			_logger.info('^^^ Do Produce, Use Previous Product: %s', self.bom_id.prev_product_id)
 			if prefix == False:
