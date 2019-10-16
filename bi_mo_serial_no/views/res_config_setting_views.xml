@@ -94,8 +94,10 @@
                      <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                      <field name="prefix_serial_no"/>  
                 </xpath>
-                <xpath expr="//field[@name='description_pickingin']" position="after">
-                     <field name="description_deliveryout"/>  
+                <xpath expr="//page[@name='inventory']" position="inside">
+			<group string="Description for Delivery Slip">
+				<field name="description_deliveryout" placeholder="This note will show up on the Delivery Slip." nolabel="1"/>
+			</group>
                 </xpath>
                 
             </field>
