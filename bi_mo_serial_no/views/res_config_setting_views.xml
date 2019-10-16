@@ -94,6 +94,9 @@
                      <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                      <field name="prefix_serial_no"/>  
                 </xpath>
+                <xpath expr="//field[@name='description_pickingin']" position="after">
+                     <field name="description_deliveryout"/>  
+                </xpath>
                 
             </field>
         </record>
