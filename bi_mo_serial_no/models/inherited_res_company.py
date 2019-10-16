@@ -119,8 +119,10 @@ class MrpProductionInherit(models.Model):
 		else :
 			no = ""
 		
+		_logger.info('^^^ Do Produce, current Lot: %s', produce.lot_id)
 		lot_serial_no = False
 		if self.bom_id and self.bom_id.prev_product_id:
+			_logger.info('^^^ Do Produce, Use Previous Product: %s', self.bom_id.prev_product_id)
 			if prefix == False:
 				prefix = 'F'
 
@@ -139,6 +141,7 @@ class MrpProductionInherit(models.Model):
 
 		# This is the original way
 		if lot_serial_no == False:
+			_logger.info('^^^ Do Produce, update serial in company to : %s', serial_no)
 			if prefix != False:
 				lot_no = prefix+no+str(serial_no)
 			else:
@@ -214,6 +217,7 @@ class MrpProductionInherit(models.Model):
 		lot_serial_no = False			
 			
 		if self.bom_id and self.bom_id.prev_product_id:
+			_logger.info('^^^ Create Custom Lot, use previous product id : %s', self.bom_id.prev_product_id)
 			if prefix == False:
 				prefix = 'F'
 				
@@ -234,6 +238,7 @@ class MrpProductionInherit(models.Model):
 						
 		#The Original Way	
 		if not lot_serial_no:
+			_logger.info('^^^ Create Custom Lot, update serial number to : %s', serial_no)
 			cnt = 0
 			serialExists = False
 			while not serialExists and cnt <=20:
