@@ -17,10 +17,10 @@ class Company(models.Model):
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 
-#class SalesOrderInherit(models.Model):
-#	_inherit = "sale.order"
+class SalesOrderInherit(models.Model):
+	_inherit = "sale.order"
 	
-#	shipping_terms = fields.Char(string="Shipping Terms")
+	shipping_terms = fields.Char(string="Shipping Terms")
 	
 	
 class ProductProductInherit(models.Model):
