@@ -85,11 +85,13 @@ class MrpProductProduce(models.TransientModel):
 		if result.apply_method == "global":
 			digit = result.digits_serial_no
 			prefix = result.prefix_serial_no
+			serial_no = company.serial_no + 1
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
+			serial_no = self.product_id.serial_no + 1
 			
-		serial_no = company.serial_no + 1
+		
 		serial_no_digit=len(str(company.serial_no))
 
 		diffrence = abs(serial_no_digit - digit)
