@@ -113,7 +113,6 @@ class MrpProductionInherit(models.Model):
 			prefix = self.product_id.prefix_serial_no
 			serial_no = self.product_id.serial_no + 1
 			
-		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
 		
