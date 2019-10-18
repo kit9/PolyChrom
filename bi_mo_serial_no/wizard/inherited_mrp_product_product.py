@@ -48,7 +48,15 @@ class MrpProductProduce(models.TransientModel):
 						else:
 							lot_serial_no = serialExists[0]
 			elif production.product_id.tracking != 'none':
-				lot_serial_no = production.create_custom_lot_no()
+				used_moves = self.env['stock.move.line'].search([('product_id', '=', production.product_id.id)])
+				used_lots = [x.lot_id.id for x in used_moves]
+				unused_lots = self.env['stock.production.lot'].search(['&', ('product_id', '=', production.product_id.id), ('id', 'not in', used_lots)])
+				if unused_lots:
+					_logger.info('^^^ Default Get, use lot: %s', unused_lots[0])
+					lot_serial_no = unused_lots[0]
+				else:
+					lot_serial_no = production.create_custom_lot_no()
+					
 			if lot_serial_no:
 				res['lot_id'] = lot_serial_no.id
 		
@@ -77,11 +85,13 @@ class MrpProductProduce(models.TransientModel):
 		if result.apply_method == "global":
 			digit = result.digits_serial_no
 			prefix = result.prefix_serial_no
+			serial_no = company.serial_no + 1
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
+			serial_no = self.product_id.serial_no + 1
 			
-		serial_no = company.serial_no + 1
+		
 		serial_no_digit=len(str(company.serial_no))
 
 		diffrence = abs(serial_no_digit - digit)

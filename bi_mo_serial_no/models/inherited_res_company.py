@@ -13,14 +13,20 @@ _logger = logging.getLogger(__name__)
 class Company(models.Model):
 	_inherit = 'res.company'
 
-
 	serial_no = fields.Integer(default = 0)
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 
+class SalesOrderInherit(models.Model):
+	_inherit = "sale.order"
+	
+	shipping_terms = fields.Char(string="Shipping Terms")
+	
+	
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
+	serial_no = fields.Integer(string='Serial No', default = 0)
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 	
@@ -28,6 +34,7 @@ class ProductProductInherit(models.Model):
 class ProductProductInherit(models.Model):
 	_inherit = "product.product"
 
+	serial_no = fields.Integer(string='Serial No', default = 0)
 	description_deliveryout = fields.Text(string='Description for Delivery')
 
 class QualityCheckInherit(models.Model):
@@ -89,12 +96,9 @@ class MrpProductionInherit(models.Model):
 
 	def do_produce_more(self, produce):
 		close = produce.do_produce()
-		_logger.info("*** Closing using the following action: %s and %s", self.qty_produced, self.product_qty)
 		# next = self.open_produce_product()
 		if self.qty_produced >= self.product_qty:
-			_logger.info("*** Closing using the following action: %s", close)
 			return close
-		_logger.info("*** Self Ensure One")
 		self.ensure_one()
 		
 		company = self.env['res.company']._company_default_get('mrp.product.produce')
@@ -103,11 +107,12 @@ class MrpProductionInherit(models.Model):
 		if result.apply_method == "global":
 			digit = result.digits_serial_no
 			prefix = result.prefix_serial_no
+			serial_no = company.serial_no + 1
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
+			serial_no = self.product_id.serial_no + 1
 			
-		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
 		
@@ -143,7 +148,12 @@ class MrpProductionInherit(models.Model):
 				lot_no = prefix+no+str(serial_no)
 			else:
 				lot_no = str(serial_no)
-			company.update({'serial_no' : serial_no})
+				
+			if result.apply_method == "global":
+				company.update({'serial_no' : serial_no})
+			else:				
+				self.product_id.update({'serial_no' : serial_no})
+				
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})
 		produce.lot_id = lot_serial_no
 		
@@ -196,11 +206,12 @@ class MrpProductionInherit(models.Model):
 		if result.apply_method == "global":
 			digit = result.digits_serial_no
 			prefix = result.prefix_serial_no
+			serial_no = company.serial_no + 1
 		else:
 			digit = self.product_id.digits_serial_no
 			prefix = self.product_id.prefix_serial_no
+			serial_no = self.product_id.serial_no + 1
 		
-		serial_no = company.serial_no + 1
 		serial_no_digit=len(str(company.serial_no))
 
 		diffrence = abs(serial_no_digit - digit)
@@ -248,7 +259,10 @@ class MrpProductionInherit(models.Model):
 				else:
 					break
 				
-			company.write({'serial_no' : serial_no})
+			if result.apply_method == "global":
+				company.write({'serial_no' : serial_no})
+			else:
+				self.product_id.write({'serial_no' : serial_no})
 			lot_serial_no = self.env['stock.production.lot'].create({'name' : lot_no,'product_id':self.product_id.id})			
 		return lot_serial_no
 

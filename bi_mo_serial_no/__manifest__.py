@@ -40,7 +40,7 @@ Generate serial number from Manufacturing order , Generate serial number in Manu
 
     """,
     'website': 'www.browseinfo.in',
-    'depends': ['base','mrp','stock'],
+    'depends': ['base','mrp','stock', 'sale', 'delivery'],
     'data': [   'wizard/inherited_mrp_product_product_views.xml',
                 'views/res_config_setting_views.xml'
                 ],
