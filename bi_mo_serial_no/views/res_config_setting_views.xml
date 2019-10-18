@@ -115,5 +115,18 @@
                 </xpath>
             </field>
         </record>
+	
+	
+        <record id="view_order_form_with_carrier_inherited" model="ir.ui.view">
+            <field name="name">delivery.view_order_form_with_carrier.inherited</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="delivery.view_order_form_with_carrier"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='carrier_selection']" position="after">
+                     <field name="shipping_terms"/>
+                </xpath>
+            </field>
+        </record>
 	         
 </odoo>
