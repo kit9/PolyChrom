@@ -13,11 +13,16 @@ _logger = logging.getLogger(__name__)
 class Company(models.Model):
 	_inherit = 'res.company'
 
-
 	serial_no = fields.Integer(default = 0)
 	digits_serial_no = fields.Integer(string='Digits :')
 	prefix_serial_no = fields.Char(string="Prefix :")
 
+class SalesOrderInherit(models.Model):
+	_inherit = "sale.order"
+	
+	shipping_terms = fields.Char(string="Shipping Terms")
+	
+	
 class ProductProductInherit(models.Model):
 	_inherit = "product.template"
 
