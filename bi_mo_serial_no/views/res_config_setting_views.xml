@@ -79,7 +79,7 @@
                      <!-- <field name="picking_serialno_id"/> -->
                      <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                      <field name="prefix_serial_no"/>
-                     <field name="serial_no" string="Serial No Counter"/>
+                     <field name="serial_no" string="Serial No Counter" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                 </xpath>
                 
             </field>
@@ -94,7 +94,7 @@
                      <!-- <field name="picking_serialno_id"/> -->
                      <field name="digits_serial_no" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/>
                      <field name="prefix_serial_no"/>  
-                     <field name="serial_no" string="Serial No Counter"/> 
+                     <field name="serial_no" string="Serial No Counter" attrs="{'invisible':[('tracking', '!=', 'serial')]}"/> 
                 </xpath>
                 <xpath expr="//page[@name='inventory']" position="inside">
 			<group string="Description for Delivery Slip">
