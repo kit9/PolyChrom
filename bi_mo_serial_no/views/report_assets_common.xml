@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_assets_common" inherit_id="web.report_assets_common" name="Report Assets Common (Custom)">
+        <xpath expr="." position="inside">
+            <link rel='stylesheet' href='/bi_mo_serial_no/static/src/less/report.less'/>
+            <link rel='stylesheet' href='/bi_mo_serial_no/static/src/css/report.css'/>
+            <link rel='stylesheet' href='/bi_mo_serial_no/static/src/scss/report.scss'/>
+        </xpath>
+    </template>
+</odoo>
